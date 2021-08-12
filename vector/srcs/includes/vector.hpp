@@ -29,28 +29,23 @@ class vector {
  private:
      std::allocator<T>  _alloc;
      value_type*        _vector;
-     iterator           _start;
-     iterator           _finish;
-     iterator           _end_of_storage;
+     size_type          _used_size;
+     size_type          _capacity;
 
  public:
      //===================================
      // Default constructor: creates an empty array with size of 0
      explicit vector(const allocator_type& alloc = allocator_type())
-         : _alloc(alloc) {
+         : _alloc(alloc), _used_size(0), _capacity(0) {
          _vector = _alloc.allocate(0);
-         _start = _vector;
-         _finish = _start;
-         _end_of_storage = _finish;
      }
      // Fill constructor: creates an array size of n and fills with copy of val
      explicit vector(size_type n, const value_type& val = value_type(),
                  const allocator_type& alloc = allocator_type())
          : _alloc(alloc) {
          _vector = _alloc.allocate(n);
-         _start = _vector;
-         _finish = _start + n;
-         _end_of_storage = _finish;
+         _used_size = n;
+         _capacity = n;
          for (size_type i = 0; i < n; i++) {
              _alloc.construct(_vector + i, val);
          }
@@ -65,25 +60,14 @@ class vector {
 
          n = std::distance(first, last);
          _vector = _alloc.allocate(n);
-         _start = _vector;
-         _finish = std::uninitialized_copy(first, last, _start);
-         _end_of_storage = _finish;
+         _used_size = n;
+         _capacity = n;
+         std::uninitialized_copy(first, last, _vector);
      }
      // Copy construcor: copies a container
-     vector(const vector& x) : _alloc(x._alloc) {
-         // size_type  i;
-
+     vector(const vector& x) : _alloc(x._alloc), _used_size(x._used_size), _capacity(x._capacity) {
          _vector = _alloc.allocate(x.capacity());
-         // std::cout << "capacity in copy construcor: " << x.capacity() << std::endl;
-         _start = _vector;
-         _finish = std::uninitialized_copy(x.begin(), x.end(), _start);
-         // _finish = _start + x.size();
-         _end_of_storage = _start + x.capacity();
-         std::cout << size() << std::endl;
-         /* i = 0;
-         for (const_iterator it = x.begin(); it != x.end(); it++, i++) {
-             _alloc.construct(_vector[i], x[i]);
-         } */
+         std::uninitialized_copy(x.begin(), x.end(), _vector);
      }
      // Destructor: destroyes and deallocates all elements
      ~vector() {
@@ -95,28 +79,30 @@ class vector {
      vector& operator=(const vector& copy) {
          if (this == &copy)
              return (*this);
-         for (iterator it = begin(); it != end(); it++)
-             _alloc.destroy(std::addressof(*it));
+         for (iterator it = begin(); it != end(); it++) {
+             _alloc.destroy(it);
+         }
          _alloc.deallocate(_vector, capacity());
-         _vector = _alloc.allocate(copy.capacity());
-         _finish = std::uninitialized_copy(copy.begin(), copy.end(), _start);
-         _end_of_storage = _start + copy.capacity();
+         _used_size = copy._used_size;
+         _capacity = copy._capacity;
+         _vector = _alloc.allocate(_capacity);
+         std::uninitialized_copy(copy.begin(), copy.end(), _vector);
          return (*this);
      }
 
      //===================================
      // Iterators section
      iterator begin() {
-         return (_start);
+         return (_vector);
      }
      const_iterator begin() const {
-         return (const_iterator(_start));
+         return (const_iterator(_vector));
      }
      iterator end() {
-         return (_finish);
+         return (_vector + _used_size);
      }
      const_iterator end() const {
-          return (const_iterator(_finish));
+          return (const_iterator(_vector + _used_size));
      }
      reverse_iterator rbegin() {
          return (reverse_iterator(end()));
@@ -134,12 +120,12 @@ class vector {
      //===================================
      // Capacity
      size_type size() const {
-         return (_finish - _start);
+         return (_used_size);
      }
      size_type max_size() const {
          return (_alloc.max_size());
      }
-     void resize (size_type n, value_type val = value_type()) {
+     void resize(size_type n, value_type val = value_type()) {
          if (n > capacity())
              reserve(n);
          for (size_type i = size(); i < n; i++)
@@ -149,22 +135,20 @@ class vector {
              for (iterator it = begin(); it != end(); it++)
                  _alloc.destroy(std::addressof(*it));
          }
-         _finish = _start + n;
+         _used_size = n;
      }
      size_type capacity() const {
          // std::cout << "in function: " << _end_of_storage - _start << std::endl;
-         return (_end_of_storage - _start);
+         return (_capacity);
      }
      bool empty() const {
-         return (_start == _finish);
+         return (_capacity == 0);
      }
      void reserve (size_type n) {
          pointer    new_vector = NULL;
 
          if (n <= capacity())
-         {
              return ;
-         }
          new_vector = _alloc.allocate(n);
          try {
              std::uninitialized_copy(begin(), end(), new_vector);
@@ -176,10 +160,7 @@ class vector {
              _alloc.destroy(std::addressof(*it));
          _alloc.deallocate(_vector, capacity());
          _vector = new_vector;
-         // Хз надо ли это: по логике надо, т.к. _vector указывает на другую область памяти теперь
-         _start = _vector;
-         _finish = _start + size();
-         _end_of_storage = _start + n;
+         _capacity = n;
      }
      reference operator[] (size_type n) {
          return (_vector[n]);
@@ -198,28 +179,28 @@ class vector {
          return (const_reference(_vector[n]));
      }
      reference front() {
-         return (*_start);
+         return (*_vector);
      }
      const_reference front() const {
-         return (const_reference(*_start));
+         return (const_reference(*_vector));
      }
      reference back() {
-         return (*(_finish - 1));
+         return (*(_vector + (_used_size - 1)));
      }
      const_reference back() const {
-         return (const_reference(*(_finish - 1)));
+         return (const_reference(*(_vector + (_used_size - 1))));
      }
      void push_back (const value_type& val) {
+         if (size() == 0)
+             reserve(2);
          if (size() == capacity())
-         {
              reserve(size() * 2);
-             _end_of_storage = _start + size() * 2;
-         }
          _alloc.construct(_vector + size(), val);
-         _finish++;
+         _used_size++;
      }
      void pop_back() {
-         _alloc.destroy(--_finish);
+         _alloc.destroy(back());
+         _used_size--;
      }
      void   show_data() {
          for (iterator it = begin(); it != end(); it++)

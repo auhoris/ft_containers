@@ -6,7 +6,7 @@
 #include <vector>
 
 #define DEBUG
-#define TEST_SIZE 7
+#define TEST_SIZE 100
 int main(void)
 {
 
@@ -54,17 +54,18 @@ int main(void)
     }
     std::cout << std::endl;
     end = clock();
-#ifdef DEBUG
     /* std::cout << "\nmy: " << std::endl;
     std::cout << "it took [ " << end - start << " ] ticks, or "
         << ((float)end - start)/CLOCKS_PER_SEC << "seconds.\n"; */
-#endif
     my_vec.show_data();
     /* std::cout << "size in main: " << my_vec.size() << std::endl;
     std::cout << "capacity in main: " << my_vec.capacity() << std::endl; */
     // std::cout << my_vec.front() << " " << my_vec.back() << std::endl;
-    ft::vector<int>     vec(my_vec);
+    std::cout << "size: " << my_vec.size() << std::endl;
+    std::cout << "capacity: " << my_vec.capacity() << std::endl;
+    ft::vector<int>     vec;
 
+    vec = my_vec;
     std::cout << "vec: " << std::endl;
     vec.show_data();
 
