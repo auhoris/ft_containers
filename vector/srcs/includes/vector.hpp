@@ -13,18 +13,18 @@ template < class T, class Alloc = std::allocator<T> >
 class vector {
  public:
      // Definitions for types
-     typedef T                                          value_type;
-     typedef Alloc                                      allocator_type;
-     typedef value_type&                                reference;
-     typedef const value_type&                          const_reference;
-     typedef value_type*                                pointer;
-     typedef const value_type*                          const_pointer;
-     typedef value_type*                                iterator;
-     typedef const value_type*                          const_iterator;
-     typedef std::reverse_iterator<value_type>          reverse_iterator;
-     typedef const std::reverse_iterator<value_type>    const_reverse_iterator;
-     typedef std::ptrdiff_t                             difference_type;
-     typedef std::size_t                                size_type;
+     typedef T                                                                  value_type;
+     typedef Alloc                                                              allocator_type;
+     typedef value_type&                                                        reference;
+     typedef const value_type&                                                  const_reference;
+     typedef value_type*                                                        pointer;
+     typedef const value_type*                                                  const_pointer;
+     typedef std::iterator<std::random_access_iterator_tag, value_type>         iterator;
+     typedef const std::iterator<std::random_access_iterator_tag, value_type>   const_iterator;
+     typedef std::reverse_iterator<iterator>                                    reverse_iterator;
+     typedef const std::reverse_iterator<iterator>                              const_reverse_iterator;
+     typedef std::ptrdiff_t                                                     difference_type;
+     typedef std::size_t                                                        size_type;
 
  private:
      std::allocator<T>  _alloc;
@@ -59,9 +59,10 @@ class vector {
          size_type  n = 0;
 
          n = std::distance(first, last);
-         _vector = _alloc.allocate(n);
+         reserve(n);
+         // _vector = _alloc.allocate(n);
          _used_size = n;
-         _capacity = n;
+         // _capacity = n;
          std::uninitialized_copy(first, last, _vector);
      }
      // Copy construcor: copies a container
@@ -92,30 +93,14 @@ class vector {
 
      //===================================
      // Iterators section
-     iterator begin() {
-         return (_vector);
-     }
-     const_iterator begin() const {
-         return (const_iterator(_vector));
-     }
-     iterator end() {
-         return (_vector + _used_size);
-     }
-     const_iterator end() const {
-          return (const_iterator(_vector + _used_size));
-     }
-     reverse_iterator rbegin() {
-         return (reverse_iterator(end()));
-     }
-     const_reverse_iterator rbegin() const {
-         return (const_reverse_iterator(end()));
-     }
-     reverse_iterator rend() {
-         return (reverse_iterator(begin()));
-     }
-     const_reverse_iterator rend() const {
-         return (const_reverse_iterator(begin()));
-     }
+     iterator begin();
+     const_iterator begin() const;
+     iterator end();
+     const_iterator end() const;
+     reverse_iterator rbegin();
+     const_reverse_iterator rbegin() const;
+     reverse_iterator rend();
+     const_reverse_iterator rend() const;
 
      //===================================
      // Capacity
@@ -138,7 +123,6 @@ class vector {
          _used_size = n;
      }
      size_type capacity() const {
-         // std::cout << "in function: " << _end_of_storage - _start << std::endl;
          return (_capacity);
      }
      bool empty() const {
@@ -162,6 +146,7 @@ class vector {
          _vector = new_vector;
          _capacity = n;
      }
+     // Element access
      reference operator[] (size_type n) {
          return (_vector[n]);
      }
@@ -190,6 +175,8 @@ class vector {
      const_reference back() const {
          return (const_reference(*(_vector + (_used_size - 1))));
      }
+
+     // Modifiers
      void push_back (const value_type& val) {
          if (size() == 0)
              reserve(2);
@@ -208,6 +195,47 @@ class vector {
          std::cout << '\n';
      }
 };
+
+// Iterators section
+template <class T, class Alloc>
+typename vector<T, Alloc>::iterator vector<T, Alloc>::begin() {
+    return (iterator(_vector));
+}
+
+template <class T, class Alloc>
+typename vector<T, Alloc>::const_iterator vector<T, Alloc>::begin() const {
+    return (const_iterator(_vector));
+}
+
+template <class T, class Alloc>
+typename vector<T, Alloc>::iterator vector<T, Alloc>::end() {
+    return (iterator(_vector + _used_size));
+}
+
+template <class T, class Alloc>
+typename vector<T, Alloc>::const_iterator vector<T, Alloc>::end() const {
+    return (const_iterator(_vector + _used_size));
+}
+
+template <class T, class Alloc>
+typename vector<T, Alloc>::reverse_iterator vector<T, Alloc>::rbegin() {
+    return (reverse_iterator(end()));
+}
+
+template <class T, class Alloc>
+typename vector<T, Alloc>::const_reverse_iterator vector<T, Alloc>::rbegin() const {
+    return (const_reverse_iterator(end()));
+}
+
+template <class T, class Alloc>
+typename vector<T, Alloc>::reverse_iterator vector<T, Alloc>::rend() {
+    return (reverse_iterator(begin()));
+}
+
+template <class T, class Alloc>
+typename vector<T, Alloc>::const_reverse_iterator vector<T, Alloc>::rend() const {
+    return (const_reverse_iterator(begin()));
+} // Iterators section end
 
 }  // namespace ft
 

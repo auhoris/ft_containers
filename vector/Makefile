@@ -13,7 +13,7 @@ objects	= $(sources:$(srcdir)/%.cpp=$(objdir)/%.o)
 deps		=  $(objects:%.o=%.d)
 
 linker	= clang++
-flags	= -Wall -Wextra -Werror -g -std=c++98
+flags	= -Wall -Wextra -Werror -g -std=c++98 -fsanitize=address
 sanit	= -fsanitize=address
 std		= -std=c++98
 
