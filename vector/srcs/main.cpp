@@ -6,7 +6,7 @@
 #include <vector>
 
 #define DEBUG
-#define TEST_SIZE 100
+#define TEST_SIZE 10
 int main(void)
 {
 
@@ -41,7 +41,7 @@ int main(void)
         i++;
     } */
     //=========================== Definetly good test
-    int    start;
+    /* int    start;
     int    end;
     int    num;
 
@@ -49,25 +49,27 @@ int main(void)
     ft::vector<int>     my_vec;
     for (int i = 0; i < TEST_SIZE; i++) {
         num = rand() % 100;
-        std::cout << num << " ";
         my_vec.push_back(num);
     }
     std::cout << std::endl;
     end = clock();
-    /* std::cout << "\nmy: " << std::endl;
+    std::cout << "\nmy: " << std::endl;
     std::cout << "it took [ " << end - start << " ] ticks, or "
         << ((float)end - start)/CLOCKS_PER_SEC << "seconds.\n"; */
-    my_vec.show_data();
+    // my_vec.show_data();
     /* std::cout << "size in main: " << my_vec.size() << std::endl;
     std::cout << "capacity in main: " << my_vec.capacity() << std::endl; */
     // std::cout << my_vec.front() << " " << my_vec.back() << std::endl;
-    std::cout << "size: " << my_vec.size() << std::endl;
-    std::cout << "capacity: " << my_vec.capacity() << std::endl;
-    ft::vector<int>     vec;
+    /* std::cout << "size: " << my_vec.size() << std::endl;
+    std::cout << "capacity: " << my_vec.capacity() << std::endl; */
+    /* ft::vector<int>     vec;
 
     vec = my_vec;
     std::cout << "vec: " << std::endl;
     vec.show_data();
+    std::cout << "my_vec: " << std::endl;
+    my_vec.show_data(); */
+
 
     /* start = clock();
     std::vector<int>     std_vec;
@@ -80,5 +82,35 @@ int main(void)
     std::cout << "it took [ " << end - start << " ] ticks, or "
         << ((float)end - start)/CLOCKS_PER_SEC << "seconds.\n"; */
 
+    /* vec1.assign(3, 12);
+    std::cout << vec1.size() << std::endl; */
+    /* for (it = vec1.begin(); it != vec1.end(); it++) {
+        std::cout << *it << std::endl;
+    }
+    vec1.clear();
+    std::cout << "after vec1.clear(): " << std::endl;
+    for (it = vec1.begin(); it != vec1.end(); it++) {
+        std::cout << *it << std::endl;
+    } */
+    /* std::cout << vec1.size() << std::endl;
+    std::cout << vec1[0] << std::endl;
+    vec1.clear();
+    std::cout << vec1.size() << std::endl;
+    std::cout << vec1[0] << std::endl; */
+    // std::cout << *it << std::endl;
+    // std::cout << *stdvec.rbegin() << std::endl;
+    /* for (ft::vector<int>::iterator it = vec1.rbegin(); it != vec1.rend(); it++) {
+        std::cout << *it << std::endl;
+    } */
+    ft::vector<int>    vec1;
+    ft::vector<int>    vec2(5, 12);
+    for (int i = 0; i < TEST_SIZE; i++) {
+        vec1.push_back(rand() % 50);
+    }
+    vec1.swap(vec2);
+    /* std::cout << vec1.size() << " " << vec1.capacity() << std::endl;
+    std::cout << vec2.size() << " " << vec2.capacity() << std::endl; */
+    /* vec1.show_data();
+    vec2.show_data(); */
     return 0;
 }
