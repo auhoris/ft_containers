@@ -17,18 +17,18 @@ template < class T, class Alloc = std::allocator<T> >
 class vector {
  public:
      // Definitions for types
-     typedef T                                  value_type;
-     typedef Alloc                              allocator_type;
-     typedef value_type&                        reference;
-     typedef const value_type&                  const_reference;
-     typedef value_type*                        pointer;
-     typedef const value_type*                  const_pointer;
-     typedef RandomAccesIterator<T>             iterator;
-     typedef const RandomAccesIterator<T>       const_iterator;
-     typedef ReverseIterator<T>                 reverse_iterator;
-     typedef const ReverseIterator<T>           const_reverse_iterator;
-     typedef std::ptrdiff_t                     difference_type;
-     typedef std::size_t                        size_type;
+     typedef T                                      value_type;
+     typedef Alloc                                  allocator_type;
+     typedef value_type&                            reference;
+     typedef const value_type&                      const_reference;
+     typedef value_type*                            pointer;
+     typedef const value_type*                      const_pointer;
+     typedef RandomAccesIterator<T>                 iterator;
+     typedef RandomAccesIterator<const T>           const_iterator;
+     typedef ReverseIterator<T>                     reverse_iterator;
+     typedef ReverseIterator<const T>               const_reverse_iterator;
+     typedef std::ptrdiff_t                         difference_type;
+     typedef std::size_t                            size_type;
 
  private:
      std::allocator<T>  _alloc;
@@ -203,13 +203,68 @@ class vector {
          _alloc.destroy(back());
          _used_size--;
      }
+     //  Доделать
      iterator insert(iterator position, const value_type& val) {
-         difference_type pos = position - begin();
+         difference_type pos;
+         // pointer         new_arr;
+
+         pos = position - begin();
          if (position == end()) {
              push_back(val);
          } else {
+             // size_type  j;
+             size_type  i;
+
+             if (_used_size == _capacity) {
+                 reserve(_used_size * 2);
+             }
+             i = ++_used_size;
+             for (; i > static_cast<size_type>(pos); i--) {
+                 _alloc.construct(_vector + i, _vector[i - 1]);
+             }
+             _alloc.construct(_vector + i, val);
+
+             // Предыдущая версия - на верняк, если верхняя не будет работать нормально
+             /* new_arr = _alloc.allocate(_capacity);
+             j = 0;
+             for (size_type i = 0; i < _used_size; i++) {
+                 if (i == static_cast<size_type>(pos)) {
+                     _alloc.construct(new_arr + i, val);
+                 } else {
+                     _alloc.construct(new_arr + i, _vector[j++]);
+                     _alloc.destroy(_vector + j);
+                 }
+             }
+             _alloc.deallocate(_vector, _capacity);
+             _vector = new_arr; */
          }
          return (begin() + pos);
+     }
+     void   insert(iterator position, size_type n, const value_type& val) {
+         for (size_type i = 0; i < n; i++) {
+             position = insert(position, val);
+         }
+     }
+     /* template <class InputIterator>
+     void insert (iterator position, InputIterator first, InputIterator last); */
+     //  =====================================================================
+     iterator erase (iterator position) {
+         difference_type     pos;
+
+         pos = position - begin();
+         _alloc.destroy(_vector + pos);
+         _used_size--;
+         for (size_type i = 0; i < _used_size; i++) {
+              _alloc.construct(_vector + i, _vector[i + 1]);
+         }
+         return (begin() + pos);
+     }
+     iterator erase (iterator first, iterator last) {
+         iterator   ret;
+         for (; first != last; first++) {
+             ret = erase(first);
+         }
+         return (ret);
      }
      void swap(vector& x) {
          std::swap(_alloc, x._alloc);
@@ -243,6 +298,7 @@ template <class T, class Alloc>
 void swap(vector<T, Alloc>& x, vector<T, Alloc>& y) {
     x.swap(y);
 }
+
 template <class T, class Alloc>
 bool operator==(const vector<T, Alloc>& lhs, const vector<T, Alloc>& rhs) {
     size_t  i;
@@ -256,10 +312,12 @@ bool operator==(const vector<T, Alloc>& lhs, const vector<T, Alloc>& rhs) {
         i++;
     return (i == size);
 }
+
 template <class T, class Alloc>
 bool operator!=(const vector<T, Alloc>& lhs, const vector<T, Alloc>& rhs) {
     return (!(lhs == rhs));
 }
+
 template <class T, class Alloc>
 bool operator<(const vector<T, Alloc>& lhs, const vector<T, Alloc>& rhs) {
     size_t  i;
@@ -275,14 +333,17 @@ bool operator<(const vector<T, Alloc>& lhs, const vector<T, Alloc>& rhs) {
     }
     return (false);
 }
+
 template <class T, class Alloc>
 bool operator<=(const vector<T, Alloc>& lhs, const vector<T, Alloc>& rhs) {
     return (!(rhs < lhs));
 }
+
 template <class T, class Alloc>
 bool operator>(const vector<T, Alloc>& lhs, const vector<T, Alloc>& rhs) {
     return (rhs < lhs);
 }
+
 template <class T, class Alloc>
 bool operator>=(const vector<T, Alloc>& lhs, const vector<T, Alloc>& rhs) {
     return (!(lhs < rhs));
@@ -322,13 +383,13 @@ vector<T, Alloc>::rbegin() const {
 
 template <class T, class Alloc>
 typename vector<T, Alloc>::reverse_iterator vector<T, Alloc>::rend() {
-    return (reverse_iterator(_vector));
+    return (reverse_iterator(_vector - 1));
 }
 
 template <class T, class Alloc>
 typename vector<T, Alloc>::const_reverse_iterator
 vector<T, Alloc>::rend() const {
-    return (const_reverse_iterator(_vector));
+    return (const_reverse_iterator(_vector - 1));
 }   // Iterators section end
 
 // Element access
@@ -336,17 +397,20 @@ template <class T, class Alloc>
 typename vector<T, Alloc>::reference vector<T, Alloc>::operator[](size_type n) {
     return (_vector[n]);
 }
+
 template <class T, class Alloc>
 typename vector<T, Alloc>::const_reference
 vector<T, Alloc>::operator[](size_type n) const {
     return (_vector[n]);
 }
+
 template <class T, class Alloc>
 typename vector<T, Alloc>::reference vector<T, Alloc>::at(size_type n) {
     if (n < 0 || n > size())
         throw std::out_of_range("ft_vector: out of range");
     return (_vector[n]);
 }
+
 template <class T, class Alloc>
 typename vector<T, Alloc>::const_reference
 vector<T, Alloc>::at(size_type n) const {
@@ -354,18 +418,22 @@ vector<T, Alloc>::at(size_type n) const {
         throw std::out_of_range("ft_vector: out of range");
     return (_vector[n]);
 }
+
 template <class T, class Alloc>
 typename vector<T, Alloc>::reference vector<T, Alloc>::front() {
     return (*_vector);
 }
+
 template <class T, class Alloc>
 typename vector<T, Alloc>::const_reference vector<T, Alloc>::front() const {
     return (*_vector);
 }
+
 template <class T, class Alloc>
 typename vector<T, Alloc>::reference vector<T, Alloc>::back() {
     return (*(_vector + (_used_size - 1)));
 }
+
 template <class T, class Alloc>
 typename vector<T, Alloc>::const_reference vector<T, Alloc>::back() const {
     return (*(_vector + (_used_size - 1)));

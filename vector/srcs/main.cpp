@@ -102,15 +102,18 @@ int main(void)
     /* for (ft::vector<int>::iterator it = vec1.rbegin(); it != vec1.rend(); it++) {
         std::cout << *it << std::endl;
     } */
-    ft::vector<int>    vec1;
-    ft::vector<int>    vec2(5, 12);
-    for (int i = 0; i < TEST_SIZE; i++) {
-        vec1.push_back(rand() % 50);
-    }
-    vec1.swap(vec2);
-    /* std::cout << vec1.size() << " " << vec1.capacity() << std::endl;
-    std::cout << vec2.size() << " " << vec2.capacity() << std::endl; */
-    /* vec1.show_data();
-    vec2.show_data(); */
+    ft::vector<int> myvector (3,100);
+    ft::vector<int>::iterator it;
+
+    it = myvector.begin();
+    it = myvector.insert ( it , 200 );
+    myvector.show_data();
+
+    myvector.insert(it, 3, 300);
+    // myvector.insert (it,2,300);
+    myvector.show_data();
+    it = myvector.begin();
+    myvector.erase(it, it + 3);
+    myvector.show_data();
     return 0;
 }
