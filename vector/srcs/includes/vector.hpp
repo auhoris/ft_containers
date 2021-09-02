@@ -57,7 +57,7 @@ class vector {
      // Range constructor: Constructs a container with as many elements
      // as the range [first,last), with each element constructed from
      // its corresponding element in that range, in the same order.
-     /* template <class InputIterator>
+     template <class InputIterator>
      vector(InputIterator first, InputIterator last,
              const allocator_type& alloc = allocator_type()) : _alloc(alloc), _vector(0), _used_size(0), _capacity(0) {
          difference_type  n = 0;
@@ -66,7 +66,7 @@ class vector {
          reserve(n);
          std::uninitialized_copy(first, last, _vector);
          _used_size = n;
-     } */
+     }
      // Copy construcor: copies a container
      vector(const vector& copy) :
          _alloc(copy._alloc), _vector(0), _used_size(0), _capacity(0) {
@@ -200,7 +200,7 @@ class vector {
          _used_size++;
      }
      void pop_back() {
-         _alloc.destroy(back());
+         _alloc.destroy(std::addressof(back()));
          _used_size--;
      }
      //  Доделать
@@ -274,7 +274,7 @@ class vector {
      }
      // ===========================
      void clear() {
-         for (size_type i = 0; i != _used_size; i++) {
+         for (size_type i = 0; i < _used_size; i++) {
              _alloc.destroy(std::addressof(_vector[i]));
          }
          _used_size = 0;

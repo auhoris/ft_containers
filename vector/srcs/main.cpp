@@ -16,11 +16,11 @@ int main(void)
     vec.push_back(1);
     vec.push_back(2);
     std::cout << vec.size() << " " << vec.capacity() << std::endl;
-    std::cout << vec.end() - vec.begin() << std::endl;
+    std::cout << vec.end() - vec.bbegin() << std::endl;
     std::vector<int>    second(vec);
 
     std::cout << second.size() << " " << second.capacity() << std::endl;
-    std::cout << second.end() - second.begin() << std::endl;
+    std::cout << second.end() - second.bbegin() << std::endl;
     std::cout << second.max_size() << std::endl; */
 
     //================
@@ -28,12 +28,12 @@ int main(void)
     /* ft::vector<int>    vec(20);
 
     std::cout << vec.size() << " " << vec.capacity() << std::endl;
-    std::cout << vec.end() - vec.begin() << std::endl; */
+    std::cout << vec.end() - vec.bbegin() << std::endl; */
     /* std::vector<int>    vec;
     for (int i = 0; i < TEST_SIZE; i++) {
         vec.push_back(rand() % 100);
     }
-    ft::vector<int>     my_vec(vec.begin(), vec.end());
+    ft::vector<int>     my_vec(vec.bbegin(), vec.end());
     size_t i = 0;
     for (auto it : my_vec) {
         std::cout << vec[i] << " ";
@@ -102,18 +102,16 @@ int main(void)
     /* for (ft::vector<int>::iterator it = vec1.rbegin(); it != vec1.rend(); it++) {
         std::cout << *it << std::endl;
     } */
-    ft::vector<int> myvector (3,100);
+    size_t  amount = 3;
+    ft::vector<int> myvector (amount,100);
     ft::vector<int>::iterator it;
 
     it = myvector.begin();
     it = myvector.insert ( it , 200 );
     myvector.show_data();
 
-    myvector.insert(it, 3, 300);
-    // myvector.insert (it,2,300);
-    myvector.show_data();
-    it = myvector.begin();
-    myvector.erase(it, it + 3);
+    myvector.insert(myvector.begin(), 3);
+    myvector.pop_back();
     myvector.show_data();
     return 0;
 }

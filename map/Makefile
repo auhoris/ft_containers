@@ -1,10 +1,10 @@
-name	= vector
+name	= map
 
 srcdir	= srcs
 objdir	= objs
 incdir	= $(srcdir)/includes
 
-inclds	= vector.hpp random_access_iterator.hpp reverse_iterator.hpp
+inclds	= rbtree.hpp bidirectional_iterator.hpp reverse_iterator.hpp
 srcs	= main.cpp
 sources = $(addprefix $(srcdir)/, $(srcs))
 incld	= $(addprefix $(incdir)/, $(inclds))
@@ -14,7 +14,7 @@ deps		=  $(objects:%.o=%.d)
 
 sanit 	= -fsanitize=address
 linker	= clang++
-flags	= -Wall -Wextra -Werror -g -std=c++98# $(sanit)
+flags	= -Wall -Wextra -Werror -g -std=c++98 #$(sanit)
 sanit	= -fsanitize=address
 std		= -std=c++98
 
