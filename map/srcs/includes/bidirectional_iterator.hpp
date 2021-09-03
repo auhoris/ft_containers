@@ -7,17 +7,17 @@
 # include "Node.hpp"
 
 namespace ft {
-template<typename T>
-class BidirectionalIterator : public std::iterator<std::bidirectional_iterator_tag, T> {
+template<typename Value>
+class BidirectionalIterator : public std::iterator<std::bidirectional_iterator_tag, Value> {
  public:
-     typedef std::bidirectional_iterator_tag iterator_category;
-     typedef T value_type;
-     typedef std::ptrdiff_t difference_type;
-     typedef T* pointer;
-     typedef T& reference;
+     typedef std::bidirectional_iterator_tag    iterator_category;
+     typedef Value                              value_type;
+     typedef std::ptrdiff_t                     difference_type;
+     typedef Value*                             pointer;
+     typedef Value&                             reference;
 
  protected:
-     typedef Node<T>* link_type;
+     typedef Node<Value>* link_type;
      link_type  _node;
 
  public:
@@ -62,9 +62,9 @@ class BidirectionalIterator : public std::iterator<std::bidirectional_iterator_t
      }
 
      // other
-     T&         operator*() { return (*_node); }
-     const T&   operator*() const { return (*_node); }
-     T*         operator->() { return (_node); }
+     Value&         operator*() { return (*_node->value); }
+     const Value&   operator*() const { return (*_node->value); }
+     Value*         operator->() { return (_node->value); }
 };
 
 }   // namespace ft
