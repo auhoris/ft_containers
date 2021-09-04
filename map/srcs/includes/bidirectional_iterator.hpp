@@ -16,7 +16,7 @@ class BidirectionalIterator : public std::iterator<std::bidirectional_iterator_t
      typedef Value*                             pointer;
      typedef Value&                             reference;
 
- protected:
+ public:
      typedef Node<Value>* link_type;
      link_type  _node;
 
