@@ -93,14 +93,11 @@ class rbtree {
                  tmp = right(parent(node_tmp->parent)); // getting uncle of <n_tmp>
                  if (color(tmp)) {
                      _swap_colors(parent(node_tmp->parent));
-                     /* color(node_tmp->parent) = false;
-                     color(tmp) = false;
-                     color(parent(node_tmp->parent)) = true; */
                      node_tmp = parent(node_tmp->parent);
                  } else {
-                         if (node_tmp == right(node_tmp->parent)) {
+                     if (node_tmp == node_tmp->parent->right) {
                          node_tmp = parent(node_tmp);
-                         _rotate_left(parent(node_tmp));
+                         _rotate_left(node_tmp);
                      }
                      color(node_tmp->parent) = false;
                      color(parent(node_tmp->parent)) = true;
@@ -110,14 +107,11 @@ class rbtree {
                  tmp = left(parent(node_tmp->parent));
                  if (color(tmp)) {
                      _swap_colors(parent(node_tmp->parent));
-                     /* color(node_tmp->parent) = false;
-                     color(tmp) = false;
-                     color(parent(node_tmp->parent)) = true; */
                      node_tmp = parent(node_tmp->parent);
                  } else {
-                     if (node_tmp == left(node_tmp->parent)) {
+                     if (node_tmp == node_tmp->parent->left) {
                          node_tmp = parent(node_tmp);
-                         _rotate_right(parent(node_tmp));
+                         _rotate_right(node_tmp);
                      }
                      color(node_tmp->parent) = false;
                      color(parent(node_tmp->parent)) = true;
@@ -159,7 +153,7 @@ class rbtree {
      rbtree&    operator=(const rbtree & copy);
 
      // Random helpers
-     value_type     search(const_reference value);
+     bool     search(const_reference val);
      void           show();
 
      // Modifiers
@@ -168,6 +162,9 @@ class rbtree {
          link_type                  new_node;
          std::pair<iterator, bool>  pair;
 
+         /* if (search(value)) {
+             return (std::make_pair(_root, false));
+         } */
          new_value = create_value(value);
          new_node = create_node(_nil, _nil, new_value);
          pair = std::make_pair(_insert(new_node), _inserted);
@@ -267,8 +264,7 @@ Node<T>*   rbtree<Key, T, Compare, Alloc, Node_alloc>::_insert(Node * nd) {
     if (tmp_parent == _nil) {
         _root = nd;
         leftmost() = nd;
-    }
-    else if (_comp(value(nd), value(tmp_parent))) {
+    } else if (_comp(value(nd), value(tmp_parent))) {
         left(tmp_parent) = nd;
         leftmost() = nd;
     } else {
@@ -276,9 +272,6 @@ Node<T>*   rbtree<Key, T, Compare, Alloc, Node_alloc>::_insert(Node * nd) {
         rightmost() = nd;
     }
     parent(nd) = tmp_parent;
-    /* std::cout << "parent: " << nd->parent << "\t";
-    std::cout << "left: " << nd->left << "\t";
-    std::cout << "right: " << nd->right << "\n"; */
     return (_insert_fixup(nd));
 }
 
@@ -296,18 +289,17 @@ template <class Key,class T, class Compare, class Alloc, class Node_alloc>
 void   rbtree<Key, T, Compare, Alloc, Node_alloc>::_rotate_right(link_type node) {
     link_type   tmp;
 
-    tmp = left(node);
-    left(node) = right(tmp);
-    if (right(tmp) != _nil) {
+    tmp = node->left;
+    node->left = tmp->right;
+    if (tmp->right != _nil)
         parent(tmp->right) = node;
-    }
     parent(tmp) = parent(node);
-    if (parent(node) == _nil)
+    if (node->parent == _nil)
         _root = tmp;
-    else if (node == right(node->parent))
-        right(node->parent) = tmp;
+    else if (node == node->parent->right)
+        node->parent->right = tmp;
     else
-        left(node->parent) = tmp;
+        node->parent->left = tmp;
     right(tmp) = node;
     parent(node) = tmp;
 }
@@ -317,35 +309,24 @@ void   rbtree<Key, T, Compare, Alloc, Node_alloc>::_rotate_left(link_type node) 
     link_type   tmp;
 
     tmp = right(node);
-    /* std::cout << "nil: " << _nil << "\n";
-    std::cout << "root: " << _root << "\t"; */
-    std::cout << "node: " << node << "\t"
-        << "parent: " << parent(node) << "\t"
-        << "left: " << left(node) << "\t"
-        << "right: " << right(node) << "\n";
-    std::cout << "root: " << _root << "\t"
-        << "parent: " << parent(_root) << "\t"
-        << "left: " << left(_root) << "\t"
-        << "right: " << right(_root) << "\n";
     right(node) = left(tmp);
-    if (left(tmp) != _nil)
+    if (tmp->left != _nil) {
+        std::cout << "LEFT" << "\n";
+        std::cout << "node key: " << key(node) << "\t";
+        std::cout << "tmp: " << tmp << "\t";
+        std::cout << "_nil: " << _nil << "\t";
+        std::cout << "address: " << tmp->left << "\n";
         parent(tmp->left) = node;
-    parent(tmp) = parent(node);
-    std::cout << (node == _root) << "\n";
-    if (node == _root) {
-        std::cout << "AASDSASADSASD" << "\n";
-        _root = tmp;
     }
-    else if (node == left(node->parent))
+    parent(tmp) = parent(node);
+    if (node == _root)
+        _root = tmp;
+    else if (node == node->parent->left)
         left(node->parent) = tmp;
     else
         right(node->parent) = tmp;
     left(tmp) = node;
     parent(node) = tmp;
-    /* std::cout << "node: " << nd << "\t";
-    std::cout << "parent: " << parent(nd) << "\t";
-    std::cout << "left: " << left(nd) << "\t";
-    std::cout << "right: " << right(nd) << "\t"; */
 }
 
 template <class Key,class T, class Compare, class Alloc, class Node_alloc>
@@ -360,21 +341,22 @@ node<T>   rbtree<T, Compare, Alloc, Node_alloc>::_deleteNode(node * nd) {
 } */
 
 template <class Key,class T, class Compare, class Alloc, class Node_alloc>
-T     rbtree<Key, T, Compare, Alloc, Node_alloc>::search(const_reference value) {
+bool     rbtree<Key, T, Compare, Alloc, Node_alloc>::search(const_reference val) {
     Node*   x;
 
     x = _root;
-    while (x != NULL) {
-        if (*(x->value) == value) {
-            return (*(x->value));
-        } else if (*(x->value) < value) {
-            x = x->left;
+    while (x != _nil) {
+        if (value(x) == val) {
+            return (true);
+        } else if (_comp(value(x), val)) {
+            x = left(x);
         } else {
-            x = x->right;
+            x = right(x);
         }
     }
-    return (std::make_pair(123, 'j'));
+    return (false);
 }
+
 template <class Key, class T, class Compare, class Alloc, class Node_alloc>
 void       rbtree<Key, T, Compare, Alloc, Node_alloc>::show() {
     _show(_root, 0);
@@ -385,7 +367,7 @@ void       rbtree<Key, T, Compare, Alloc, Node_alloc>::_show(Node * nd, int plac
 	if (nd == _nil) {
         for(int i = 5; i < place + 5; i++)
             std::cout << " ";
-        std::cout << "NIL: " << _nil << std::endl;
+        std::cout << "NIL: " << std::endl;
 		return;
     }
 	place += 5;
@@ -394,7 +376,7 @@ void       rbtree<Key, T, Compare, Alloc, Node_alloc>::_show(Node * nd, int plac
 	for(int i = 5; i < place; i++)
 		std::cout << " ";
 
-	std::cout << key_of_value(value(nd)) << "[ " << nd << " ]" << (nd->color == 1 ? " R" : " B") <<'\n';
+	std::cout << key_of_value(value(nd)) /*<< "[ " << nd << " ]"*/ << (nd->color == 1 ? " R" : " B") <<'\n';
 
 	_show(nd->left, place);
 }

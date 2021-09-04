@@ -7,12 +7,16 @@
 #include <map>
 #include <iostream>
 
-#define NODES 28
+#define NODES 10
 
 template<class Key, class T>
 void    make_tree(ft::rbtree<Key, T> &tree) {
+    int     number;
+
     for (int i = 0; i < NODES; i++) {
-        tree.insert(std::make_pair(i + 1, static_cast<char>(65 + (rand() % 25))));
+        number = rand() % NODES;
+        // std::cout << "i = " << i << "\t" << "number = " << number << "\n";
+        tree.insert(std::make_pair(number, static_cast<char>(65 + (rand() % 25))));
     }
 }
 
@@ -27,6 +31,6 @@ int main(void)
     /* std::cout << test.begin()->first << "\n";
     std::cout << test.begin()->second << "\n"; */
     // std::map<int, char>     std_map;
-    test.show();
+    // test.show();
     return 0;
 }
