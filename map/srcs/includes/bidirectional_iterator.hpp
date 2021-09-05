@@ -7,6 +7,7 @@
 # include "Node.hpp"
 
 namespace ft {
+
 template<typename Value>
 class BidirectionalIterator : public std::iterator<std::bidirectional_iterator_tag, Value> {
  public:
@@ -16,7 +17,7 @@ class BidirectionalIterator : public std::iterator<std::bidirectional_iterator_t
      typedef Value*                             pointer;
      typedef Value&                             reference;
 
- public:
+ protected:
      typedef Node<Value>* link_type;
      link_type  _node;
 
@@ -41,7 +42,18 @@ class BidirectionalIterator : public std::iterator<std::bidirectional_iterator_t
 
      // arithmetic
      BidirectionalIterator&   operator++() {
-         _node++;
+         if (_node->right != _nil) {
+             _node = _node->right;
+             while (_node->left != _nil)
+                 _node = _node->left;
+         } else {
+             link_type p_node = _node->parent;
+             while (p_node->right == _node) {
+                 _node = p_node;
+                 p_node = _node->parent;
+             }
+             _node = p_node;
+         }
          return (*this);
      }
      BidirectionalIterator   operator++(int) {

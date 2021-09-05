@@ -8,10 +8,14 @@
 # include <memory>
 # include <string>
 # include <utility>
-# include "bidirectional_iterator.hpp"
-# include "reverse_iterator.hpp"
+# include "Node.hpp"
+// # include "bidirectional_iterator.hpp"
+// # include "reverse_iterator.hpp"
 
 namespace ft {
+
+template<typename T>
+class BidirectionalIterator;
 
 template <class Key,
          class Value,
@@ -19,7 +23,6 @@ template <class Key,
          class Alloc = std::allocator<Value>,
          class Node_alloc = std::allocator<Node<Value> > >
 class rbtree {
-
  public:    // Main Typedefs
      typedef Key                                key_type;
      typedef Value                              value_type;
@@ -30,18 +33,101 @@ class rbtree {
      typedef const value_type&                  const_reference;
      typedef value_type*                        pointer;
      typedef const value_type*                  const_pointer;
-     typedef BidirectionalIterator<Value>       iterator;
-     typedef BidirectionalIterator<const Value> const_iterator;
-     typedef ReverseIterator<Value>             reverse_iterator;
-     typedef ReverseIterator<const Value>       const_reverse_iterator;
      typedef std::ptrdiff_t                     difference_type;
      typedef std::size_t                        size_type;
 
- private:   // Functions section
+ private:   // Fields
      // Node typedefs
      typedef Node<value_type>  Node;
      typedef Node*             link_type;
 
+     link_type                      _root;
+     link_type                      _header;
+     link_type                      _nil;    // для экономии памяти - будет являться конечным узлом
+     std::less<Value>               _comp;
+     std::allocator<value_type>     _valloc;
+     std::allocator<Node>           _nalloc; // hz zachem
+     size_type                      _size;
+
+ public: // Iterators classes
+     template<typename T>
+     class BidirectionalIterator : public std::iterator<std::bidirectional_iterator_tag, Value> {
+         friend class rbtree<Key, Value>;
+      protected:
+          link_type  _node;
+ 
+      public:
+          // Default things
+          BidirectionalIterator() : _node(NULL) { }
+          BidirectionalIterator(link_type type) : _node(type) { }
+          virtual ~BidirectionalIterator() { }
+          BidirectionalIterator(const BidirectionalIterator &copy) : _node(copy._node) { }
+ 
+          // operators
+          BidirectionalIterator&    operator=(BidirectionalIterator const & copy) {
+              if (this == &copy)
+                  return (*this);
+              _node = copy._node;
+              return (*this);
+          }
+          // logical
+          bool   operator==(BidirectionalIterator const & other) { return (_node == other._node); }
+          bool   operator!=(BidirectionalIterator const & other) { return (_node != other._node); }
+          // arithmetic
+          BidirectionalIterator&   operator++() {
+              if (_node->right->right != NULL) {
+                  _node = _node->right;
+                  while (_node->left->left != NULL)
+                      _node = _node->left;
+              } else {
+                  link_type p_node = _node->parent;
+                  while (p_node->right == _node) {
+                      _node = p_node;
+                      p_node = _node->parent;
+                  }
+                  _node = p_node;
+              }
+              return (*this);
+          }
+          BidirectionalIterator   operator++(int) {
+              BidirectionalIterator tmp(*this);
+ 
+              operator++();
+              return (tmp);
+          }
+          BidirectionalIterator&   operator--() {
+              if (_node->left->left != NULL) {
+                  _node = _node->right;
+                  while (_node->right->right != NULL)
+                      _node = _node->right;
+              } else {
+                  link_type p_node = _node->parent;
+                  while (_node == p_node->left) {
+                      _node = p_node;
+                      p_node = _node->parent;
+                  }
+                  _node = p_node;
+              }
+              return (*this);
+          }
+          BidirectionalIterator   operator--(int) {
+              BidirectionalIterator tmp(*this);
+ 
+              operator--();
+              return (tmp);
+          }
+          // other
+          Value&         operator*() { return (*_node->value); }
+          const Value&   operator*() const { return (*_node->value); }
+          Value*         operator->() { return (_node->value); }
+     };
+
+     typedef BidirectionalIterator<Value>       iterator;
+     typedef BidirectionalIterator<const Value> const_iterator;
+     /* typedef ReverseIterator<Value>             reverse_iterator;
+     typedef ReverseIterator<const Value>       const_reverse_iterator; */
+
+ private:   // Functions section
      // Accessors to Node fields =======================
      key_type const & key_of_value(const_reference val) { return (val.first); }
      reference        value(link_type nd) { return (*nd->value); }
@@ -54,31 +140,11 @@ class rbtree {
      link_type&       leftmost() const { return (left(_header)); }
      link_type&       rightmost() { return (right(_header)); }
      link_type&       rightmost() const { return (right(_header)); }
-     link_type        minimum(link_type x) {
-         while (left(x) != _nil) x = left(x);
-         return (x);
-     }
-     link_type        maximum(link_type x) {
-         while (right(x) != _nil) x = right(x);
-         return (x);
-     }
-
+     link_type        minimum(link_type x);
+     link_type        maximum(link_type x);
      // Utils ==========================================
-     pointer        create_value(const_reference val) {
-         pointer    value;
-
-         value = _valloc.allocate(1);
-         _valloc.construct(value, val);
-         return (value);
-     }
-     link_type  create_node(link_type childs = NULL, link_type parent = NULL, pointer value = NULL) {
-         link_type  created;
-
-         created = _nalloc.allocate(1);
-         _nalloc.construct(created, Node(value, childs, parent));
-         color(created) = value != NULL;
-         return (created);
-     }
+     pointer        create_value(const_reference val);
+     link_type  create_node(link_type childs = NULL, link_type parent = NULL, pointer value = NULL);
      bool       _is_red(link_type nd);
      void       _clear(link_type nd);
      iterator   _insert(link_type insert_to, link_type node, const_reference val);  // Takes <where> to insert and <what> to insert
@@ -88,15 +154,6 @@ class rbtree {
      void       _swap_colors(link_type nd);
      Node       _deleteNode(link_type nd);
      void       _show(link_type nd, int place);
-
- private:   // Fields
-     link_type                      _root;
-     link_type                      _header;
-     link_type                      _nil;    // для экономии памяти - будет являться конечным узлом
-     std::less<Value>               _comp;
-     std::allocator<value_type>     _valloc;
-     std::allocator<Node>           _nalloc; // hz zachem
-     size_type                      _size;
 
  public:    // Member funcs
      // Default things
@@ -113,7 +170,7 @@ class rbtree {
      rbtree&    operator=(const rbtree & copy);
 
      // Random helpers
-     link_type       search(const_reference val);
+     link_type      search(const_reference val);
      void           show();
 
      // Modifiers
@@ -135,7 +192,7 @@ rbtree<Key, T, Compare, Alloc, Node_alloc>::rbtree(const key_compare& comp,
          const node_allocator_type & nalloc) : _comp(comp), _valloc(valloc), _nalloc(nalloc), _size(0) {
      _nil = create_node();
      _root = _nil;
-     _header = create_node(_root);
+     _header = create_node(_root, NULL, create_value(value_type()));
      color(_header) = true;
      leftmost() = _header;
      rightmost() = _header;
@@ -235,8 +292,10 @@ rbtree<Key, T, Compare, Alloc, Node_alloc>::insert(iterator position, const valu
     iterator ret;
     iterator searched = search(val);
 
-    if (searched != _nil)
+    if (searched != _nil) {
+        std::cout << "HERE" << "\n";
         return (searched);
+    }
     (void)position;
     // ret = _insert(position._node, position._node, val);
     return (insert(val).first);
@@ -447,6 +506,40 @@ void   rbtree<Key, T, Compare, Alloc, Node_alloc>::_clear(Node * nd) {
     _valloc.deallocate(_valloc.address(value(nd)), 1);
     delete nd;
 }
+
+template <class Key,class T, class Compare, class Alloc, class Node_alloc>
+typename rbtree<Key, T, Compare, Alloc, Node_alloc>::link_type
+rbtree<Key, T, Compare, Alloc, Node_alloc>::minimum(link_type x) {
+    while (left(x) != _nil) x = left(x);
+    return (x);
+}
+template <class Key,class T, class Compare, class Alloc, class Node_alloc>
+typename rbtree<Key, T, Compare, Alloc, Node_alloc>::link_type
+rbtree<Key, T, Compare, Alloc, Node_alloc>::maximum(link_type x) {
+    while (right(x) != _nil) x = right(x);
+    return (x);
+}
+template <class Key,class T, class Compare, class Alloc, class Node_alloc>
+typename rbtree<Key, T, Compare, Alloc, Node_alloc>::pointer
+rbtree<Key, T, Compare, Alloc, Node_alloc>::create_value(const_reference val) {
+    pointer    value;
+
+    value = _valloc.allocate(1);
+    _valloc.construct(value, val);
+    return (value);
+}
+
+template <class Key,class T, class Compare, class Alloc, class Node_alloc>
+typename rbtree<Key, T, Compare, Alloc, Node_alloc>::link_type
+rbtree<Key, T, Compare, Alloc, Node_alloc>::create_node(link_type childs, link_type parent, pointer value) {
+    link_type  created;
+
+    created = _nalloc.allocate(1);
+    _nalloc.construct(created, Node(value, childs, parent));
+    color(created) = value != NULL;
+    return (created);
+}
+
 }   // namespace ft
 
 #endif /* ifndef __MAP_SRCS_INCLUDES_RBTREE_HPP__ */
