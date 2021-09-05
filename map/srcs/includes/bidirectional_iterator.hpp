@@ -42,9 +42,9 @@ class BidirectionalIterator : public std::iterator<std::bidirectional_iterator_t
 
      // arithmetic
      BidirectionalIterator&   operator++() {
-         if (_node->right != _nil) {
+         if (_node->right->right != NULL) {
              _node = _node->right;
-             while (_node->left != _nil)
+             while (_node->left->left != NULL)
                  _node = _node->left;
          } else {
              link_type p_node = _node->parent;
@@ -63,7 +63,18 @@ class BidirectionalIterator : public std::iterator<std::bidirectional_iterator_t
          return (tmp);
      }
      BidirectionalIterator&   operator--() {
-         _node--;
+         if (_node->left->left != NULL) {
+             _node = _node->right;
+             while (_node->right->right != NULL)
+                 _node = _node->right;
+         } else {
+             link_type p_node = _node->parent;
+             while (_node == p_node->left) {
+                 _node = p_node;
+                 p_node = _node->parent;
+             }
+             _node = p_node;
+         }
          return (*this);
      }
      BidirectionalIterator   operator--(int) {
@@ -73,6 +84,7 @@ class BidirectionalIterator : public std::iterator<std::bidirectional_iterator_t
          return (tmp);
      }
 
+     link_type&     node() { return (_node); }
      // other
      Value&         operator*() { return (*_node->value); }
      const Value&   operator*() const { return (*_node->value); }

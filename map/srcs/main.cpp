@@ -2,12 +2,13 @@
 #include <cstdlib>
 #include <ctime>
 #include <functional>
+#include <iterator>
 #include <type_traits>
 #include <utility>
 #include <map>
 #include <iostream>
 
-#define NODES 35
+#define NODES 9
 
 template<class Key, class T>
 void    make_tree(ft::rbtree<Key, T> &tree) {
@@ -54,7 +55,10 @@ int main(void)
 {
     srand(time(0));
     ft::rbtree<int, std::pair<int, char> >      test;
-    std::map<int, char>                         std_map;
+    ft::rbtree<int, std::pair<int, char> >      test2;
+    ft::rbtree<int, std::pair<int, char> >::iterator   it;
+    ft::rbtree<int, std::pair<int, char> >::reverse_iterator   rev_it;
+    /* std::map<int, char>                         std_map;
     std_map.insert(std::make_pair(1, static_cast<char>(65 + (rand() % 25))));
     std_map.insert(std::make_pair(3, static_cast<char>(65 + (rand() % 25))));
     std_map.insert(std::make_pair(4, static_cast<char>(65 + (rand() % 25))));
@@ -66,22 +70,24 @@ int main(void)
     std_map.insert(std::make_pair(10, static_cast<char>(65 + (rand() % 25))));
     show_stdmap(std_map);
     std::map<int, char>::iterator   it = std_map.begin();
-    it++;
-    it++;
-    std_map.insert(it, std::make_pair(2, static_cast<char>(65 + (rand() % 25))));
-    show_stdmap(std_map);
-    ft::rbtree<int, std::pair<int, char> >::iterator     itm;
+    std::advance(it, 5);
+    std_map.insert(it, std::make_pair(4, static_cast<char>(65 + (rand() % 25))));
+    show_stdmap(std_map); */
     make_tree(test);
-    show_rbtree(test);
-    itm = test.end();
-    itm--;
-    std::cout <<  itm->first << "\n";
-    // show_rbtree(test);
-    // show_rbtree(test);
+    test.show();
+    rev_it = test.rbegin();
+    std::cout << rev_it->first << "\n";
+    std::cout << rev_it->second << "\n";
     /* test.show();
-    test.insert(itm, std::make_pair(2, static_cast<char>(65 + (rand() % 25))));
-    std::cout << "====================================" << "\n";
+    it = test.begin();
+    std::advance(it, 1);
+    test.insert(it, std::make_pair(2, 'c'));
     test.show(); */
+    /* make_tree(test2);
+    test2.show();
+    test2.insert(test.begin(), test.end());
+    test2.show(); */
+    // test.insert(itm, std::make_pair(2, static_cast<char>(65 + (rand() % 25))));
     /* test.insert(std::make_pair(1, 'c'));
     test.insert(std::make_pair(0, 'a')); */
     return 0;

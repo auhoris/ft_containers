@@ -9,8 +9,13 @@
 # include <string>
 # include <utility>
 # include "Node.hpp"
-// # include "bidirectional_iterator.hpp"
-// # include "reverse_iterator.hpp"
+# include "bidirectional_iterator.hpp"
+# include "reverse_iterator.hpp"
+//
+#define YELLOW  "\033[33m"      /* Yellow */
+#define BLACK   "\033[30m"      /* Black */
+#define RED     "\033[31m"      /* Red */
+#define RESET   "\033[0m"
 
 namespace ft {
 
@@ -33,6 +38,10 @@ class rbtree {
      typedef const value_type&                  const_reference;
      typedef value_type*                        pointer;
      typedef const value_type*                  const_pointer;
+     typedef BidirectionalIterator<Value>       iterator;
+     typedef BidirectionalIterator<const Value> const_iterator;
+     typedef ReverseIterator<iterator>             reverse_iterator;
+     typedef ReverseIterator<const_iterator>       const_reverse_iterator;
      typedef std::ptrdiff_t                     difference_type;
      typedef std::size_t                        size_type;
 
@@ -40,7 +49,6 @@ class rbtree {
      // Node typedefs
      typedef Node<value_type>  Node;
      typedef Node*             link_type;
-
      link_type                      _root;
      link_type                      _header;
      link_type                      _nil;    // для экономии памяти - будет являться конечным узлом
@@ -48,84 +56,6 @@ class rbtree {
      std::allocator<value_type>     _valloc;
      std::allocator<Node>           _nalloc; // hz zachem
      size_type                      _size;
-
- public: // Iterators classes
-     template<typename T>
-     class BidirectionalIterator : public std::iterator<std::bidirectional_iterator_tag, Value> {
-         friend class rbtree<Key, Value>;
-      protected:
-          link_type  _node;
- 
-      public:
-          // Default things
-          BidirectionalIterator() : _node(NULL) { }
-          BidirectionalIterator(link_type type) : _node(type) { }
-          virtual ~BidirectionalIterator() { }
-          BidirectionalIterator(const BidirectionalIterator &copy) : _node(copy._node) { }
- 
-          // operators
-          BidirectionalIterator&    operator=(BidirectionalIterator const & copy) {
-              if (this == &copy)
-                  return (*this);
-              _node = copy._node;
-              return (*this);
-          }
-          // logical
-          bool   operator==(BidirectionalIterator const & other) { return (_node == other._node); }
-          bool   operator!=(BidirectionalIterator const & other) { return (_node != other._node); }
-          // arithmetic
-          BidirectionalIterator&   operator++() {
-              if (_node->right->right != NULL) {
-                  _node = _node->right;
-                  while (_node->left->left != NULL)
-                      _node = _node->left;
-              } else {
-                  link_type p_node = _node->parent;
-                  while (p_node->right == _node) {
-                      _node = p_node;
-                      p_node = _node->parent;
-                  }
-                  _node = p_node;
-              }
-              return (*this);
-          }
-          BidirectionalIterator   operator++(int) {
-              BidirectionalIterator tmp(*this);
- 
-              operator++();
-              return (tmp);
-          }
-          BidirectionalIterator&   operator--() {
-              if (_node->left->left != NULL) {
-                  _node = _node->right;
-                  while (_node->right->right != NULL)
-                      _node = _node->right;
-              } else {
-                  link_type p_node = _node->parent;
-                  while (_node == p_node->left) {
-                      _node = p_node;
-                      p_node = _node->parent;
-                  }
-                  _node = p_node;
-              }
-              return (*this);
-          }
-          BidirectionalIterator   operator--(int) {
-              BidirectionalIterator tmp(*this);
- 
-              operator--();
-              return (tmp);
-          }
-          // other
-          Value&         operator*() { return (*_node->value); }
-          const Value&   operator*() const { return (*_node->value); }
-          Value*         operator->() { return (_node->value); }
-     };
-
-     typedef BidirectionalIterator<Value>       iterator;
-     typedef BidirectionalIterator<const Value> const_iterator;
-     /* typedef ReverseIterator<Value>             reverse_iterator;
-     typedef ReverseIterator<const Value>       const_reverse_iterator; */
 
  private:   // Functions section
      // Accessors to Node fields =======================
@@ -143,17 +73,17 @@ class rbtree {
      link_type        minimum(link_type x);
      link_type        maximum(link_type x);
      // Utils ==========================================
-     pointer        create_value(const_reference val);
-     link_type  create_node(link_type childs = NULL, link_type parent = NULL, pointer value = NULL);
-     bool       _is_red(link_type nd);
-     void       _clear(link_type nd);
-     iterator   _insert(link_type insert_to, link_type node, const_reference val);  // Takes <where> to insert and <what> to insert
-     iterator   _insert_fixup(link_type & node);
-     void       _rotate_right(link_type nd);
-     void       _rotate_left(link_type nd);
-     void       _swap_colors(link_type nd);
-     Node       _deleteNode(link_type nd);
-     void       _show(link_type nd, int place);
+     pointer          create_value(const_reference val);
+     link_type        create_node(link_type childs = NULL, link_type parent = NULL, pointer value = NULL);
+     bool             _is_red(link_type nd);
+     void             _clear(link_type nd);
+     iterator         _insert(link_type insert_to, link_type node, const_reference val);
+     iterator         _insert_fixup(link_type & node);
+     void             _rotate_right(link_type nd);
+     void             _rotate_left(link_type nd);
+     void             _swap_colors(link_type nd);
+     Node             _deleteNode(link_type nd);
+     void             _show(link_type nd, int place);
 
  public:    // Member funcs
      // Default things
@@ -177,12 +107,25 @@ class rbtree {
      typedef std::pair<iterator, bool> pair_iterator_bool;
      pair_iterator_bool     insert(const_reference val);
      iterator               insert(iterator position, const value_type& val);
+     template <class InputIterator>
+     void insert (InputIterator first, InputIterator last) {
+         iterator it;
 
+         it = first;
+         while (first != last) {
+             it = insert(it, *first);
+             first++;
+         }
+     }
      // Iterators
      iterator begin() { return (leftmost()); }
      const_iterator begin() const { return (leftmost()); }
      iterator end() { return (_header); }
      const_iterator end() const { return (_header); }
+     reverse_iterator rbegin() { return (reverse_iterator(rightmost())); }
+     const_reverse_iterator rbegin() const { return (reverse_iterator(rightmost())); }
+     /* reverse_iterator rend() { return (_header); }
+     const_reverse_iterator rend() const { return (_header); } */
      size_type  size() { return (_size); }
 };
 
@@ -235,6 +178,8 @@ rbtree<Key, T, Compare, Alloc, Node_alloc>::~rbtree() {
     _clear(_root);
     _nalloc.destroy(_nil);
     _nalloc.deallocate(_nil, 1);
+    _valloc.destroy(_header->value);
+    _valloc.deallocate(_header->value, 1);
     _nalloc.destroy(_header);
     _nalloc.deallocate(_header, 1);
 }
@@ -273,31 +218,22 @@ insert(const_reference val) {
     return (std::make_pair(_insert(curr_tmp, p_tmp, val), true));
 }
 
-//^^^^^^^^^^^^
-/* pointer    new_value;
-link_type  new_node;
-iterator   searched;
-
-searched = search(val);
-if (searched != _nil)
-    return (std::make_pair(iterator(searched), false));
-_size++;
-new_value = create_value(val);
-new_node = create_node(_nil, _nil, new_value);
-return (std::make_pair(_insert(_root, new_node), true)); */
-
 template <class Key,class T, class Compare, class Alloc, class Node_alloc>
 typename rbtree<Key, T, Compare, Alloc, Node_alloc>::iterator
 rbtree<Key, T, Compare, Alloc, Node_alloc>::insert(iterator position, const value_type& val) {
     iterator ret;
     iterator searched = search(val);
 
-    if (searched != _nil) {
-        std::cout << "HERE" << "\n";
+    if (searched != _nil)
         return (searched);
+    if (position == begin()) {
+        if (_comp(val, value(position.node())))
+            return (_insert(position.node(), position.node(), val));
     }
-    (void)position;
-    // ret = _insert(position._node, position._node, val);
+    else if (position == end()) {
+        if (_comp(value(rightmost()), val))
+            return (_insert(_nil, rightmost(), val));
+    }
     return (insert(val).first);
 }
 
@@ -307,10 +243,9 @@ rbtree<Key, T, Compare, Alloc, Node_alloc>::
 _insert(link_type insert_to, link_type parent, const_reference val) {
     link_type new_node;
 
-    (void)insert_to;
     ++_size;
     new_node = create_node(_nil, parent, create_value(val));
-    if (parent == _header) {
+    /* if (parent == _header) {
         _root = new_node;
         leftmost() = new_node;
         rightmost() = new_node;
@@ -325,46 +260,21 @@ _insert(link_type insert_to, link_type parent, const_reference val) {
             if (parent == rightmost())
                 rightmost() = new_node;
         }
-    }
-    /* if (parent == _header || insert_to != _nil || _comp(val, value(parent))) {
+    } */
+    if (parent == _header || insert_to != _nil || _comp(val, value(parent))) {
         left(parent) = new_node;
         if (parent == _header) {
             _root = new_node;
+            rightmost() = new_node;
         } else if (parent == leftmost())
             leftmost() = new_node;
     } else {
         right(parent) = new_node;
         if (parent == rightmost())
             rightmost() = new_node;
-    } */
+    }
     return (_insert_fixup(new_node));
 }
-//^^^^^^^^^^^^^^^^^^^^^^
-/* link_type   tmp_parent;
-link_type   tmp_root;
-
-tmp_root = insert_to;
-tmp_parent = tmp_root == _root ? _nil : parent(tmp_root);
-while (tmp_root != _nil) {
-    tmp_parent = tmp_root;
-    if (_comp(value(node), value(tmp_root)))
-        tmp_root = left(tmp_root);
-    else
-        tmp_root = right(tmp_root);
-}
-if (tmp_parent == _nil) {
-    _root = node;
-    leftmost() = node;
-} else if (_comp(value(node), value(tmp_parent))) {
-    left(tmp_parent) = node;
-    leftmost() = node;
-} else {
-    right(tmp_parent) = node;
-    rightmost() = node;
-}
-parent(node) = tmp_parent;
-return (iterator(_insert_fixup(node))); */
-
 
 template <class Key, class T, class Compare, class Alloc, class Node_alloc>
 typename rbtree<Key, T, Compare, Alloc, Node_alloc>::iterator
@@ -474,6 +384,7 @@ rbtree<Key, T, Compare, Alloc, Node_alloc>::search(const_reference val) {
 
 template <class Key, class T, class Compare, class Alloc, class Node_alloc>
 void       rbtree<Key, T, Compare, Alloc, Node_alloc>::show() {
+    std::cout << "===========================================" << "\n";
     _show(_root, 0);
 }
 
@@ -482,7 +393,7 @@ void       rbtree<Key, T, Compare, Alloc, Node_alloc>::_show(link_type nd, int p
 	if (nd == _nil) {
         for(int i = 5; i < place + 5; i++)
             std::cout << " ";
-        std::cout << "NIL: " << std::endl;
+        std::cout << YELLOW << "NIL: " << RESET << std::endl;
 		return;
     }
 	place += 5;
@@ -491,7 +402,12 @@ void       rbtree<Key, T, Compare, Alloc, Node_alloc>::_show(link_type nd, int p
 	for(int i = 5; i < place; i++)
 		std::cout << " ";
 
-	std::cout << nd->value->first << " "<< nd->value->second << (nd->color == 1 ? " R" : " B") <<'\n';
+    if (color(nd) == 1) {
+        std::cout << RED << nd->value->first << " " << nd->value->second << RESET<< "\n";
+    } else {
+        std::cout << YELLOW << nd->value->first << " " << nd->value->second << RESET<< "\n";
+    }
+	// std::cout << nd->value->first << " "<< nd->value->second << (nd->color == 1 ? " R" : " B") <<'\n';
 
 	_show(nd->left, place);
 }
