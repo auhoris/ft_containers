@@ -56,9 +56,9 @@ int main(void)
     srand(time(0));
     ft::rbtree<int, std::pair<int, char> >      test;
     ft::rbtree<int, std::pair<int, char> >      test2;
-    ft::rbtree<int, std::pair<int, char> >::iterator   it;
+    ft::rbtree<int, std::pair<int, char> >::iterator it;
     ft::rbtree<int, std::pair<int, char> >::reverse_iterator   rev_it;
-    /* std::map<int, char>                         std_map;
+    std::map<int, char>                         std_map;
     std_map.insert(std::make_pair(1, static_cast<char>(65 + (rand() % 25))));
     std_map.insert(std::make_pair(3, static_cast<char>(65 + (rand() % 25))));
     std_map.insert(std::make_pair(4, static_cast<char>(65 + (rand() % 25))));
@@ -68,12 +68,18 @@ int main(void)
     std_map.insert(std::make_pair(8, static_cast<char>(65 + (rand() % 25))));
     std_map.insert(std::make_pair(9, static_cast<char>(65 + (rand() % 25))));
     std_map.insert(std::make_pair(10, static_cast<char>(65 + (rand() % 25))));
-    std::map<int, char>::iterator   mapit = std_map.end();
+    std::cout << std_map.max_size() << "\n";
+    it = test.begin();
+    std::cout << test.empty() << "\n";
+    std::cout << test.max_size() << "\n";
+    /* std::map<int, char>::iterator   mapit = std_map.end();
     while (mapit != std_map.begin()) {
         std::cout << mapit->first << mapit->second << "\n";
         mapit--;
     } */
-    make_tree(test);
+    // std::cout << test.begin()->first << "\n";
+    // std::cout << test.empty() << "\n";
+    /* make_tree(test);
     test.show();
     rev_it = test.rend();
     while (rev_it != test.rbegin()) {
@@ -81,7 +87,7 @@ int main(void)
         rev_it--;
     }
     std::cout << rev_it->first;
-    std::cout << "\n";
+    std::cout << "\n"; */
     /* it = test.end();
     int i = 0;
     while (it != test.begin()) {

@@ -65,6 +65,8 @@ class rbtree {
      bool&            color(link_type nd) { return (nd->color); }
      link_type&       left(link_type x) { return (x->left); }
      link_type&       right(link_type x) { return (x->right); }
+     link_type&       left(link_type x) const { return (x->left); }
+     link_type&       right(link_type x) const { return (x->right); }
      link_type&       parent(link_type x) { return (x->parent); }
      link_type&       leftmost() { return (left(_header)); }
      link_type&       leftmost() const { return (left(_header)); }
@@ -126,7 +128,9 @@ class rbtree {
      const_reverse_iterator rbegin() const { return (reverse_iterator(rightmost())); }
      reverse_iterator rend() { return (_header); }
      const_reverse_iterator rend() const { return (_header); }
+     bool empty() const { return (_size == 0); }
      size_type  size() { return (_size); }
+     size_type max_size() const { return (_nalloc.max_size()); }
 };
 
 template <class Key, class T, class Compare, class Alloc, class Node_alloc>
