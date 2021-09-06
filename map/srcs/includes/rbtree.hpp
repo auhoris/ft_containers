@@ -40,8 +40,8 @@ class rbtree {
      typedef const value_type*                  const_pointer;
      typedef BidirectionalIterator<Value>       iterator;
      typedef BidirectionalIterator<const Value> const_iterator;
-     typedef ReverseIterator<iterator>             reverse_iterator;
-     typedef ReverseIterator<const_iterator>       const_reverse_iterator;
+     typedef ReverseIterator<Value>             reverse_iterator;
+     typedef ReverseIterator<const Value>       const_reverse_iterator;
      typedef std::ptrdiff_t                     difference_type;
      typedef std::size_t                        size_type;
 
@@ -124,8 +124,8 @@ class rbtree {
      const_iterator end() const { return (_header); }
      reverse_iterator rbegin() { return (reverse_iterator(rightmost())); }
      const_reverse_iterator rbegin() const { return (reverse_iterator(rightmost())); }
-     /* reverse_iterator rend() { return (_header); }
-     const_reverse_iterator rend() const { return (_header); } */
+     reverse_iterator rend() { return (_header); }
+     const_reverse_iterator rend() const { return (_header); }
      size_type  size() { return (_size); }
 };
 

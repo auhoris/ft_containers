@@ -63,8 +63,10 @@ class BidirectionalIterator : public std::iterator<std::bidirectional_iterator_t
          return (tmp);
      }
      BidirectionalIterator&   operator--() {
-         if (_node->left->left != NULL) {
+         if (_node->color == true && _node->parent == NULL) { // only _header has NULL parent
              _node = _node->right;
+         } else if (_node->left->left != NULL) {
+             _node = _node->left;
              while (_node->right->right != NULL)
                  _node = _node->right;
          } else {

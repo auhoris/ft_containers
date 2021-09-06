@@ -1,51 +1,82 @@
 #ifndef __VECTOR_SRCS_INCLUDES_REVERSE_ITERATOR_HPP__
 # define __VECTOR_SRCS_INCLUDES_REVERSE_ITERATOR_HPP__
 
-# include "bidirectional_iterator.hpp"
-# include <iterator>
+# include "Node.hpp"
+// #include "bidirectional_iterator.hpp"
+#include <iterator>
+// # include "bidirectional_iterator.hpp"
+// # include <iterator>
 
 namespace ft {
-template<typename T>
-class ReverseIterator : public std::reverse_iterator<BidirectionalIterator<T> > {
- public:
-     typedef std::reverse_iterator<BidirectionalIterator<T> > iterator_category;
-     typedef T value_type;
-     typedef std::ptrdiff_t difference_type;
-     typedef T* pointer;
-     typedef T& reference;
-     typedef Node<T>* link_type;
 
- private:
+template<typename Value>
+class ReverseIterator : public std::iterator<std::bidirectional_iterator_tag, Value> {
+ public:
+     typedef std::bidirectional_iterator_tag    iterator_category;
+     typedef Value                              value_type;
+     typedef std::ptrdiff_t                     difference_type;
+     typedef Value*                             pointer;
+     typedef Value&                             reference;
+
+ protected:
+     typedef Node<Value>* link_type;
      link_type  _node;
 
  public:
-     // Default
-     ReverseIterator() : _node(NULL) { }
-     ReverseIterator(pointer type) : _node(type) {}
+     // Default things
+     ReverseIterator() : _node(NULL) { };
+     ReverseIterator(link_type type) : _node(type) { };
      virtual ~ReverseIterator() { }
-     ReverseIterator(const ReverseIterator &other) :  _node(other._node) {}
+     ReverseIterator(const ReverseIterator &copy) : _node(copy._node) { }
 
      // operators
-     ReverseIterator&   operator=(ReverseIterator const & other) {
-         if (this == &other)
+     ReverseIterator&    operator=(ReverseIterator const & copy) {
+         if (this == &copy)
              return (*this);
-         this->_node = other._node;
+         _node = copy._node;
          return (*this);
      }
 
+     // logical
+     bool   operator==(ReverseIterator const & other) { return (_node == other._node); }
+     bool   operator!=(ReverseIterator const & other) { return (_node != other._node); }
+
      // arithmetic
-     ReverseIterator&   operator--() {
-         if (this->_node->right->right != NULL) {
-             this->node = this->_node->right;
-             while (this->_node->left->left != NULL)
-                 this->_node = this->_node->left;
+     ReverseIterator&   operator++() {
+         if (_node->left->left != NULL) {
+             _node = _node->left;
+             while (_node->right->right != NULL)
+                 _node = _node->right;
          } else {
-             link_type p_node = this->_node->parent;
-             while (p_node->right == this->_node) {
-                 this->_node = p_node;
-                 p_node = this->_node->parent;
+             link_type p_node = _node->parent;
+             while (p_node->left == _node) {
+                 _node = p_node;
+                 p_node = _node->parent;
              }
-             this->_node = p_node;
+             _node = p_node;
+         }
+         return (*this);
+     }
+     ReverseIterator   operator++(int) {
+         ReverseIterator tmp(*this);
+
+         operator++();
+         return (tmp);
+     }
+     ReverseIterator&   operator--() {
+         if (_node->color == true && _node->parent == NULL) { // only _header has NULL parent
+             _node = _node->left;
+         } else if (_node->right->right != NULL) {
+             _node = _node->right;
+             while (_node->left->left != NULL)
+                 _node = _node->left;
+         } else {
+             link_type p_node = _node->parent;
+             while (_node == p_node->right) {
+                 _node = p_node;
+                 p_node = _node->parent;
+             }
+             _node = p_node;
          }
          return (*this);
      }
@@ -55,28 +86,13 @@ class ReverseIterator : public std::reverse_iterator<BidirectionalIterator<T> > 
          operator--();
          return (tmp);
      }
-     ReverseIterator&   operator++() {
-         if (this->_node->left->left != NULL) {
-             this->_node = this->_node->right;
-             while (this->_node->right->right != NULL)
-                 this->_node = this->_node->right;
-         } else {
-             link_type p_node = this->_node->parent;
-             while (this->_node == p_node->left) {
-                 this->_node = p_node;
-                 p_node = this->_node->parent;
-             }
-             this->_node = p_node;
-         }
-         return (*this);
-     }
-     ReverseIterator   operator++(int) {
-         ReverseIterator tmp(*this);
 
-         operator--();
-         return (tmp);
-     }
+     link_type&     node() { return (_node); }
+     // other
+     Value&         operator*() { return (*_node->value); }
+     const Value&   operator*() const { return (*_node->value); }
+     Value*         operator->() { return (_node->value); }
 };
 
-} // namespace ft
+}   // namespace ft
 #endif /* ifndef __VECTOR_SRCS_INCLUDES_REVERSE_ITERATOR_HPP__ */

@@ -8,7 +8,7 @@
 #include <map>
 #include <iostream>
 
-#define NODES 9
+#define NODES 20
 
 template<class Key, class T>
 void    make_tree(ft::rbtree<Key, T> &tree) {
@@ -68,16 +68,30 @@ int main(void)
     std_map.insert(std::make_pair(8, static_cast<char>(65 + (rand() % 25))));
     std_map.insert(std::make_pair(9, static_cast<char>(65 + (rand() % 25))));
     std_map.insert(std::make_pair(10, static_cast<char>(65 + (rand() % 25))));
-    show_stdmap(std_map);
-    std::map<int, char>::iterator   it = std_map.begin();
-    std::advance(it, 5);
-    std_map.insert(it, std::make_pair(4, static_cast<char>(65 + (rand() % 25))));
-    show_stdmap(std_map); */
+    std::map<int, char>::iterator   mapit = std_map.end();
+    while (mapit != std_map.begin()) {
+        std::cout << mapit->first << mapit->second << "\n";
+        mapit--;
+    } */
     make_tree(test);
     test.show();
-    rev_it = test.rbegin();
-    std::cout << rev_it->first << "\n";
-    std::cout << rev_it->second << "\n";
+    rev_it = test.rend();
+    while (rev_it != test.rbegin()) {
+        std::cout << rev_it->first  << " ";
+        rev_it--;
+    }
+    std::cout << rev_it->first;
+    std::cout << "\n";
+    /* it = test.end();
+    int i = 0;
+    while (it != test.begin()) {
+        std::cout << it->first << " " << it->second << "\n";
+        it--;
+        i++;
+    }
+    std::cout << it->first << " " << it->second << "\n"; */
+    /* std::cout << rev_it->first << "\n";
+    std::cout << rev_it->second << "\n"; */
     /* test.show();
     it = test.begin();
     std::advance(it, 1);
