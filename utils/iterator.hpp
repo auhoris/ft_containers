@@ -1,16 +1,18 @@
-#ifndef __UTILS_ITERATOR_TRAITS_HPP__
-# define __UTILS_ITERATOR_TRAITS_HPP__
+#ifndef __UTILS_ITERATOR_HPP__
+# define __UTILS_ITERATOR_HPP__
 
 # include <cstddef>
-# include <map>
+# include <memory>
 
 namespace ft {
 
+// iterator tags
 struct input_iterator_tag { };
 struct forward_iterator_tag : public input_iterator_tag { };
 struct bidirectional_iterator_tag : public forward_iterator_tag { };
 struct random_access_iterator_tag : public bidirectional_iterator_tag { };
 
+// iterator
 template <class Category,
          class T,
          class Distance = std::ptrdiff_t,
@@ -24,6 +26,7 @@ struct iterator {
     typedef Category  iterator_category;
 };
 
+// iterator traits
 template<class Iter>
 struct iterator_traits {
     typedef typename Iter::iterator_category    iterator_category;
@@ -42,6 +45,7 @@ struct iterator_traits<T*> {
     typedef T&                          reference;
 };
 
+// reverse iterator
 template<typename Iter>
 class reverse_iterator
 : public iterator<typename iterator_traits<Iter>::iterator_category,
@@ -64,22 +68,80 @@ class reverse_iterator
      explicit reverse_iterator(iterator_type iter) : _iter(iter) { }
      reverse_iterator(const reverse_iterator<Iter>& iter) : _iter(iter.base()) { }
      iterator_type base() const { return (_iter); }
-     reference operator*() const {
-         Iter   tmp = _iter;
-         return (*tmp);
-     }
+     reference operator*() const { Iter   tmp = _iter; tmp--; return (*tmp); }
      reverse_iterator operator+(difference_type n) const { return (reverse_iterator(_iter - n));}
-     reverse_iterator& operator++() {
-         _iter--;
-         return (*this);
-     }
+     reverse_iterator& operator++() { _iter--; return (*this); }
      reverse_iterator  operator++(int) {
          reverse_iterator   tmp(*this);
          _iter--;
          return (tmp);
      }
-
+     reverse_iterator& operator+=(difference_type n) {
+         _iter -= n;
+         return (*this);
+     }
+     reverse_iterator operator-(difference_type n) const { return (reverse_iterator(_iter + n)); }
+     reverse_iterator& operator--() {
+         _iter++;
+         return (*this);
+     }
+     reverse_iterator  operator--(int) {
+         reverse_iterator   tmp(*this);
+         _iter--;
+         return (tmp);
+     }
+     reverse_iterator& operator-= (difference_type n) {
+         _iter += n;
+         return (*this);
+     }
+     pointer operator->() const { return (std::addressof(operator*())); }
+     reference operator[] (difference_type n) const { return (*(*this + n)); }
 };
+
+// relational operators
+template <class Iterator>
+bool operator==(const reverse_iterator<Iterator>& lhs,
+                   const reverse_iterator<Iterator>& rhs) {
+    return (lhs.base() == rhs.base());
+}
+template <class Iterator>
+bool operator!=(const reverse_iterator<Iterator>& lhs,
+                   const reverse_iterator<Iterator>& rhs) {
+    return (lhs.base() != rhs.base());
+}
+template <class Iterator>
+bool operator<(const reverse_iterator<Iterator>& lhs,
+                   const reverse_iterator<Iterator>& rhs) {
+    return (lhs.base() < rhs.base());
+}
+template <class Iterator>
+bool operator<=(const reverse_iterator<Iterator>& lhs,
+                   const reverse_iterator<Iterator>& rhs) {
+    return (lhs.base() <= rhs.base());
+}
+template <class Iterator>
+bool operator>(const reverse_iterator<Iterator>& lhs,
+                   const reverse_iterator<Iterator>& rhs) {
+    return (lhs.base() > rhs.base());
+}
+template <class Iterator>
+bool operator>=(const reverse_iterator<Iterator>& lhs,
+                   const reverse_iterator<Iterator>& rhs) {
+    return (lhs.base() >= rhs.base());
+}
+
+template <class Iterator>
+reverse_iterator<Iterator> operator+(
+             typename reverse_iterator<Iterator>::difference_type n,
+             const reverse_iterator<Iterator>& rev_it) {
+    return (rev_it + n);
+}
+template <class Iterator>
+typename reverse_iterator<Iterator>::difference_type operator-(
+    const reverse_iterator<Iterator>& lhs,
+    const reverse_iterator<Iterator>& rhs) {
+    return (rhs.base() - lhs.base());
+}
 
 } // namespace ft
 
