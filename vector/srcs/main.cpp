@@ -102,16 +102,25 @@ int main(void)
     /* for (ft::vector<int>::iterator it = vec1.rbegin(); it != vec1.rend(); it++) {
         std::cout << *it << std::endl;
     } */
-    size_t  amount = 3;
-    ft::vector<int> myvector (amount,100);
-    ft::vector<int>::iterator it;
-
+    ft::vector<int> myvector;
+    for (int i = 0; i < 35; i++) {
+        myvector.push_back(i);
+    }
+    ft::vector<int>::const_iterator it;
     it = myvector.begin();
+    std::cout << *it << "\n";
+    /* while (it != myvector.rend()) {
+        std::cout << *it << " ";
+        it++;
+    } */
+    std::cout << "\n";
+
+    /* it = myvector.begin();
     it = myvector.insert ( it , 200 );
     myvector.show_data();
 
     myvector.insert(myvector.begin(), 3);
     myvector.pop_back();
-    myvector.show_data();
+    myvector.show_data(); */
     return 0;
 }

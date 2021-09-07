@@ -7,13 +7,15 @@
 # include <iostream>
 # include <new>
 # include <stdexcept>
-# include "random_access_iterator.hpp"
-# include "reverse_iterator.hpp"
+# include "../../../utils/vector_iterator.hpp"
+# include "../../../utils/utils.hpp"
+// # include "reverse_iterator.hpp"
 
 // Using own namespace
 namespace ft {
 
-template < class T, class Alloc = std::allocator<T> >
+template <class T,
+         class Alloc = std::allocator<T> >
 class vector {
  public:
      // Definitions for types
@@ -23,10 +25,10 @@ class vector {
      typedef const value_type&                      const_reference;
      typedef value_type*                            pointer;
      typedef const value_type*                      const_pointer;
-     typedef RandomAccesIterator<T>                 iterator;
-     typedef RandomAccesIterator<const T>           const_iterator;
-     typedef ReverseIterator<T>                     reverse_iterator;
-     typedef ReverseIterator<const T>               const_reverse_iterator;
+     typedef VectorIterator<T, false>                      iterator;
+     typedef VectorIterator<T, true>                const_iterator;
+     typedef ft::reverse_iterator<iterator>         reverse_iterator;
+     typedef ft::reverse_iterator<const_iterator>   const_reverse_iterator;
      typedef std::ptrdiff_t                         difference_type;
      typedef std::size_t                            size_type;
 
@@ -372,36 +374,36 @@ typename vector<T, Alloc>::const_iterator vector<T, Alloc>::end() const {
 
 template <class T, class Alloc>
 typename vector<T, Alloc>::reverse_iterator vector<T, Alloc>::rbegin() {
-    return (reverse_iterator(_vector + _used_size - 1));
+    return (reverse_iterator(end()));
 }
 
 template <class T, class Alloc>
 typename vector<T, Alloc>::const_reverse_iterator
 vector<T, Alloc>::rbegin() const {
-    return (const_reverse_iterator(_vector + _used_size - 1));
+    return (const_reverse_iterator(end()));
 }
 
 template <class T, class Alloc>
 typename vector<T, Alloc>::reverse_iterator vector<T, Alloc>::rend() {
-    return (reverse_iterator(_vector - 1));
+    return (reverse_iterator(begin()));
 }
 
 template <class T, class Alloc>
 typename vector<T, Alloc>::const_reverse_iterator
 vector<T, Alloc>::rend() const {
-    return (const_reverse_iterator(_vector - 1));
+    return (const_reverse_iterator(begin()));
 }   // Iterators section end
 
 // Element access
 template <class T, class Alloc>
 typename vector<T, Alloc>::reference vector<T, Alloc>::operator[](size_type n) {
-    return (_vector[n]);
+    return (*(_vector + n));
 }
 
 template <class T, class Alloc>
 typename vector<T, Alloc>::const_reference
 vector<T, Alloc>::operator[](size_type n) const {
-    return (_vector[n]);
+    return (*(_vector + n));
 }
 
 template <class T, class Alloc>
