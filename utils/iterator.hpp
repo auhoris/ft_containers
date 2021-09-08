@@ -3,6 +3,7 @@
 
 # include <cstddef>
 # include <memory>
+# include <type_traits>
 
 namespace ft {
 
@@ -11,6 +12,7 @@ struct input_iterator_tag { };
 struct forward_iterator_tag : public input_iterator_tag { };
 struct bidirectional_iterator_tag : public forward_iterator_tag { };
 struct random_access_iterator_tag : public bidirectional_iterator_tag { };
+// --------------- end : iterator tags
 
 // iterator
 template <class Category,
@@ -25,6 +27,7 @@ struct iterator {
     typedef Reference reference;
     typedef Category  iterator_category;
 };
+// --------------- end : iterator
 
 // iterator traits
 template<class Iter>
@@ -44,6 +47,7 @@ struct iterator_traits<T*> {
     typedef T*                          pointer;
     typedef T&                          reference;
 };
+// --------------- end : iterator_traits
 
 // reverse iterator
 template<typename Iter>
@@ -142,6 +146,7 @@ typename reverse_iterator<Iterator>::difference_type operator-(
     const reverse_iterator<Iterator>& rhs) {
     return (rhs.base() - lhs.base());
 }
+// --------------- end : reverse_iterator
 
 } // namespace ft
 
