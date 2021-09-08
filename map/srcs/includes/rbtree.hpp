@@ -4,18 +4,15 @@
 # include <iostream>
 # include <cstddef>
 # include <functional>
-# include <iterator>
 # include <memory>
 # include <string>
 # include <utility>
-# include "Node.hpp"
-# include "bidirectional_iterator.hpp"
-# include "reverse_iterator.hpp"
-//
-#define YELLOW  "\033[33m"      /* Yellow */
-#define BLACK   "\033[30m"      /* Black */
-#define RED     "\033[31m"      /* Red */
-#define RESET   "\033[0m"
+# include "../../../utils/rbtree_iterator.hpp"
+
+# define YELLOW  "\033[33m"      /* Yellow */
+# define BLACK   "\033[30m"      /* Black */
+# define RED     "\033[31m"      /* Red */
+# define RESET   "\033[0m"
 
 namespace ft {
 
@@ -29,21 +26,21 @@ template <class Key,
          class Node_alloc = std::allocator<Node<Value> > >
 class rbtree {
  public:    // Main Typedefs
-     typedef Key                                key_type;
-     typedef Value                              value_type;
-     typedef Compare                            key_compare;
-     typedef Alloc                              allocator_type;
-     typedef Node_alloc                         node_allocator_type;
-     typedef value_type&                        reference;
-     typedef const value_type&                  const_reference;
-     typedef value_type*                        pointer;
-     typedef const value_type*                  const_pointer;
-     typedef BidirectionalIterator<Value>       iterator;
-     typedef BidirectionalIterator<const Value> const_iterator;
-     typedef ReverseIterator<Value>             reverse_iterator;
-     typedef ReverseIterator<const Value>       const_reverse_iterator;
-     typedef std::ptrdiff_t                     difference_type;
-     typedef std::size_t                        size_type;
+     typedef Key                                                    key_type;
+     typedef Value                                                  value_type;
+     typedef Compare                                                key_compare;
+     typedef Alloc                                                  allocator_type;
+     typedef Node_alloc                                             node_allocator_type;
+     typedef typename allocator_type::reference                     reference;
+     typedef typename allocator_type::const_reference               const_reference;
+     typedef typename allocator_type::pointer                       pointer;
+     typedef typename allocator_type::const_pointer                 const_pointer;
+     typedef RBTreeIterator<Value, false>                           iterator;
+     typedef RBTreeIterator<Value, true>                            const_iterator;
+     typedef ft::reverse_iterator<iterator>                         reverse_iterator;
+     typedef ft::reverse_iterator<const_iterator>                   const_reverse_iterator;
+     typedef typename iterator_traits<iterator>::difference_type    difference_type;
+     typedef std::size_t                                            size_type;
 
  private:   // Fields
      // Node typedefs
@@ -110,7 +107,8 @@ class rbtree {
      pair_iterator_bool     insert(const_reference val);
      iterator               insert(iterator position, const value_type& val);
      template <class InputIterator>
-     void insert (InputIterator first, InputIterator last) {
+     void insert (InputIterator first, InputIterator last,
+             typename enable_if<!is_integral<InputIterator>::value>::type* = NULL) {
          iterator it;
 
          it = first;
@@ -124,10 +122,10 @@ class rbtree {
      const_iterator begin() const { return (leftmost()); }
      iterator end() { return (_header); }
      const_iterator end() const { return (_header); }
-     reverse_iterator rbegin() { return (reverse_iterator(rightmost())); }
-     const_reverse_iterator rbegin() const { return (reverse_iterator(rightmost())); }
-     reverse_iterator rend() { return (_header); }
-     const_reverse_iterator rend() const { return (_header); }
+     reverse_iterator rbegin() { return (reverse_iterator(end())); }
+     const_reverse_iterator rbegin() const { return (reverse_iterator(end())); }
+     reverse_iterator rend() { return (reverse_iterator(begin())); }
+     const_reverse_iterator rend() const { return (reverse_iterator(begin())); }
      bool empty() const { return (_size == 0); }
      size_type  size() { return (_size); }
      size_type max_size() const { return (_nalloc.max_size()); }
