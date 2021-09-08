@@ -1,6 +1,9 @@
 #ifndef __UTILS_UTILS_HPP__
 # define __UTILS_UTILS_HPP__
 
+#include "iterator.hpp"
+#include <iterator>
+#include <type_traits>
 namespace ft {
 
 // conditional
@@ -98,6 +101,84 @@ struct is_integral<unsigned long> {
 
 template<>
 struct is_integral<unsigned long long> {
+    static const bool value = true;
+};
+template<class T, class U>
+struct is_same {
+    static const bool value = false;
+};
+ 
+template<class T>
+struct is_same<T, T> {
+    static const bool value = true;
+};
+// is_input_iterator
+template<typename Tag>
+struct is_iterator {
+    static const bool value = false;
+};
+
+template<>
+struct is_iterator<input_iterator_tag> {
+    static const bool value = true;
+};
+
+template<>
+struct is_iterator<forward_iterator_tag> {
+    static const bool value = true;
+};
+
+template<>
+struct is_iterator<bidirectional_iterator_tag> {
+    static const bool value = true;
+};
+
+template<>
+struct is_iterator<random_access_iterator_tag> {
+    static const bool value = true;
+};
+
+// is_input_iterator
+template<typename Tag>
+struct is_input_iterator {
+    static const bool value = false;
+};
+
+template<>
+struct is_input_iterator<input_iterator_tag> {
+    static const bool value = true;
+};
+
+// is_input_iterator
+template<typename Tag>
+struct is_forward_iterator {
+    static const bool value = false;
+};
+
+template<>
+struct is_forward_iterator<forward_iterator_tag> {
+    static const bool value = true;
+};
+
+// is_input_iterator
+template<typename Tag>
+struct is_bidirectional_iterator {
+    static const bool value = false;
+};
+
+template<>
+struct is_bidirectional_iterator<bidirectional_iterator_tag> {
+    static const bool value = true;
+};
+
+// is_input_iterator
+template<typename Tag>
+struct is_random_access_iterator {
+    static const bool value = false;
+};
+
+template<>
+struct is_random_access_iterator<random_access_iterator_tag> {
     static const bool value = true;
 };
 

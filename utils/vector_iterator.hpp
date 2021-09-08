@@ -3,6 +3,9 @@
 
 # include <bitset>
 # include <cstddef>
+# include <cstdio>
+# include <iostream>
+# include <memory>
 # include "iterator.hpp"
 # include "type_traits.hpp"
 
@@ -25,6 +28,8 @@ class VectorIterator : public iterator<random_access_iterator_tag, T> {
      VectorIterator(pointer type) : _iter(type) { };
      virtual ~VectorIterator() { }
      VectorIterator(const VectorIterator<T, IsConst> &copy) : _iter(copy._iter) { }
+     pointer    base() { return (_iter); }
+     pointer    base() const { return (_iter); }
 
      // operators
      VectorIterator<T, IsConst>&    operator=(VectorIterator<T, IsConst> const & copy) {
@@ -33,12 +38,6 @@ class VectorIterator : public iterator<random_access_iterator_tag, T> {
          _iter = copy._iter;
          return (*this);
      }
-     /* VectorIterator<T, IsConst>&    operator=(VectorIterator<T, true> & copy) {
-         if (this == &copy)
-             return (*this);
-         _iter = copy._iter;
-         return (*this);
-     } */
      operator VectorIterator<T, true>() const {
          return (VectorIterator<T, true>(_iter));
      }
@@ -80,14 +79,15 @@ class VectorIterator : public iterator<random_access_iterator_tag, T> {
          _iter -= move;
          return (*this);
      }
-     pointer     operator+(const difference_type & move) {
+     VectorIterator<T, IsConst>     operator+(difference_type move) {
          return (_iter + move);
      }
-     pointer     operator-(const difference_type & move) {
+     VectorIterator<T, IsConst>     operator-(difference_type move) {
          return (_iter - move);
      }
      difference_type    operator-(VectorIterator<T, IsConst> const & iter) {
-         return (std::distance(_iter, iter._iter));
+
+         return (std::distance(iter.base(), base()));
      }
 
      // other
@@ -97,6 +97,15 @@ class VectorIterator : public iterator<random_access_iterator_tag, T> {
      value_type  operator[](difference_type n) { return (*(_iter + n)); }
 };
 
+template<typename T, bool IsConst>
+VectorIterator<T, IsConst>  operator+(VectorIterator<T, IsConst> iter, typename VectorIterator<T, IsConst>::difference_type n) {
+    return (iter + n);
+}
+
+template<typename T, bool IsConst>
+VectorIterator<T, IsConst>  operator-(VectorIterator<T, IsConst> iter, typename VectorIterator<T, IsConst>::difference_type n) {
+    return (iter - n);
+}
 }   // namespace ft
 
 #endif /* ifndef __UTILS_VECTOR_ITERATOR_HPP__ * */
