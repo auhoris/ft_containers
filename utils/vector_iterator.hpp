@@ -16,9 +16,6 @@ class VectorIterator : public iterator<random_access_iterator_tag, T> {
      typedef typename conditional<IsConst, const T&, T&>::type  reference;
      typedef random_access_iterator_tag                         iterator_category;
      typedef ptrdiff_t                                          difference_type;
-     // typedef T                                                  value_type;
-     /* typedef value_type*                                        pointer;
-     typedef value_type&                                        reference; */
 
  protected:
      pointer    _iter;
