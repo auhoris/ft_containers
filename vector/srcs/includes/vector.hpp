@@ -1,7 +1,6 @@
 #ifndef __VECTOR_SRCS_INCLUDES_VECTOR_HPP__
 # define __VECTOR_SRCS_INCLUDES_VECTOR_HPP__
 
-# include <iterator>
 # include <utility>
 # include <memory>
 # include <iostream>
@@ -25,7 +24,7 @@ class vector {
      typedef const value_type&                      const_reference;
      typedef value_type*                            pointer;
      typedef const value_type*                      const_pointer;
-     typedef VectorIterator<T, false>                      iterator;
+     typedef VectorIterator<T, false>               iterator;
      typedef VectorIterator<T, true>                const_iterator;
      typedef ft::reverse_iterator<iterator>         reverse_iterator;
      typedef ft::reverse_iterator<const_iterator>   const_reverse_iterator;
