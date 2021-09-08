@@ -1,13 +1,14 @@
 #ifndef __VECTOR_SRCS_INCLUDES_VECTOR_HPP__
 # define __VECTOR_SRCS_INCLUDES_VECTOR_HPP__
 
+#include <type_traits>
 # include <utility>
 # include <memory>
 # include <iostream>
 # include <new>
 # include <stdexcept>
 # include "../../../utils/vector_iterator.hpp"
-# include "../../../utils/utils.hpp"
+# include "../../../utils/type_traits.hpp"
 // # include "reverse_iterator.hpp"
 
 // Using own namespace
@@ -60,7 +61,8 @@ class vector {
      // its corresponding element in that range, in the same order.
      template <class InputIterator>
      vector(InputIterator first, InputIterator last,
-             const allocator_type& alloc = allocator_type()) : _alloc(alloc), _vector(0), _used_size(0), _capacity(0) {
+             const allocator_type& alloc = allocator_type(),
+             typename enable_if<!is_integral<InputIterator>::value>::type* = NULL) : _alloc(alloc), _vector(0), _used_size(0), _capacity(0) {
          difference_type  n = 0;
 
          n = std::distance(first, last);
@@ -175,15 +177,16 @@ class vector {
      const_reference back() const;
 
      // Modifiers
-     /* template <class InputIterator>
-     void assign(InputIterator first, InputIterator last) {
+     template <class InputIterator>
+     void assign(InputIterator first, InputIterator last,
+             typename enable_if<!is_integral<InputIterator>::value>::type* = NULL) {
          difference_type    tmp;
 
          tmp = std::distance(first, last);
          reserve(tmp);
          clear();
          std::uninitialized_copy(first, last, _vector);
-     } */
+     }
      void assign(size_type n, const value_type& val) {
          reserve(n);
          clear();
@@ -246,8 +249,13 @@ class vector {
              position = insert(position, val);
          }
      }
-     /* template <class InputIterator>
-     void insert (iterator position, InputIterator first, InputIterator last); */
+     template <class InputIterator>
+     void insert(iterator position, InputIterator first, InputIterator last,
+             typename enable_if<!is_integral<InputIterator>::value>::type* = NULL) {
+         for (; first != last; first++) {
+             position = insert(position, *first);
+         }
+     }
      //  =====================================================================
      iterator erase (iterator position) {
          difference_type     pos;

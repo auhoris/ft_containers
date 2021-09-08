@@ -119,6 +119,10 @@ int main(void)
     myvector.insert(myvector.begin(), 3);
     myvector.pop_back();
     myvector.show_data(); */
+    ft::vector<int>     vec(10, 10);
+    ft::vector<int>     vec1;
+    vec1.insert(vec1.begin(), vec.begin(), vec.end());
+    vec1.show_data();
 
     return 0;
 }
