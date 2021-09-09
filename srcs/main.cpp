@@ -1,7 +1,19 @@
 #include "../vector.hpp"
+#include <cstddef>
 #include <iostream>
+#include <iterator>
 #include <memory>
 #include <vector>
+
+void test(int n) {
+    std::cout << n << "\n";
+}
+
+template<typename InputIterator>
+void test(InputIterator first, typename ft::enable_if<ft::is_iterator<InputIterator>::value>::type* = 0) {
+    (void)first;
+    std::cout << ft::is_iterator<InputIterator>::value << "\n";
+}
 
 int main(void) {
     /* int             arr1[5] = {1, 2, 3, 4, 5};
@@ -97,9 +109,25 @@ int main(void) {
     std::cout << "v1[7]->" << (v1[7] == 1) << "\n";
     std::cout << "v1[8]->" << (v1[8] == 2) << "\n"; */
 
-    ft::vector<int> vec(10, 10);
-    ft::vector<int> vec1(vec.begin(), vec.end());
-    vec.show_data();
+    // size_t n = 10;
+    ft::vector<int>     test(10, 10);
+    // ft::vector<int> joap(test.begin(), test.end());
+    ft::vector<int> vec2(test.begin(), test.end());
+    /* test.show_data();
+    joap.show_data();
+    joap.show_data(); */
+    ft::vector<int>::const_reverse_iterator it = vec2.rend();
+    it--;
+    for (; it != vec2.rbegin(); it--)
+    {
+        std::cout << *it << "\n";
+    }
+    // vec2.show_data();
+    // std::vector<int> vec1("sd", n);
+    // test(0);
+    // ft::vector<int> vec1(vec.begin(), vec.end());
+    // vec.show_data();
+    // std::cout << std::__is_input_iterator<std::vector<int>::iterator>::value << "\n";
     // int             arr1[5] = {1, 2, 3, 4, 5};
     /* std::vector<int> v1(arr1, arr1 + 5);
 
