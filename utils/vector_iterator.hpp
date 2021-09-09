@@ -28,7 +28,7 @@ class VectorIterator : public iterator<random_access_iterator_tag, T> {
      VectorIterator(pointer type) : _iter(type) { };
      virtual ~VectorIterator() { }
      VectorIterator(const VectorIterator<T, IsConst> &copy) : _iter(copy._iter) { }
-     pointer    base() { return (_iter); }
+     // pointer    base() { return (_iter); }
      pointer    base() const { return (_iter); }
 
      // operators
