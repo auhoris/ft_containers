@@ -1,18 +1,15 @@
 #ifndef __VECTOR_SRCS_INCLUDES_VECTOR_HPP__
 # define __VECTOR_SRCS_INCLUDES_VECTOR_HPP__
 
-# include <iterator>
-# include <vector>
 # include <utility>
 # include <memory>
 # include <iostream>
 # include <new>
 # include <stdexcept>
+# include "utils/iterator.hpp"
 # include "utils/vector_iterator.hpp"
 # include "utils/type_traits.hpp"
-// # include "reverse_iterator.hpp"
 
-// Using own namespace
 namespace ft {
 
 template <class T,
@@ -63,10 +60,10 @@ class vector {
      template <class InputIterator>
      vector(InputIterator first, InputIterator last,
              const allocator_type& alloc = allocator_type(),
-             typename enable_if<!is_integral<InputIterator>::value>::type* = NULL) : _alloc(alloc), _vector(0), _used_size(0), _capacity(0) {
+             typename std::enable_if<!is_integral<InputIterator>::value>::type* = 0) : _alloc(alloc), _vector(0), _used_size(0), _capacity(0) {
          difference_type  n = 0;
 
-         n = std::distance(first, last);
+         n = ft::distance(first, last);
          reserve(n);
          std::uninitialized_copy(first, last, _vector);
          _used_size = n;
@@ -256,7 +253,6 @@ class vector {
      void insert(iterator position, InputIterator first, InputIterator last,
              typename enable_if<!is_integral<InputIterator>::value>::type* = NULL) {
          for (; first != last; ) {
-             // std::cout << *first << "\n";
              position = insert(position, *--last);
          }
      }
@@ -405,7 +401,8 @@ template <class T, class Alloc>
 typename vector<T, Alloc>::const_reverse_iterator
 vector<T, Alloc>::rend() const {
     return (const_reverse_iterator(begin()));
-}   // Iterators section end
+}
+// Iterators section end
 
 // Element access
 template <class T, class Alloc>
