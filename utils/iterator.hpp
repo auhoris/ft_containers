@@ -1,6 +1,7 @@
 #ifndef __UTILS_ITERATOR_HPP__
 # define __UTILS_ITERATOR_HPP__
 
+// #include "type_traits.hpp"
 # include <cstddef>
 # include <memory>
 # include <type_traits>
@@ -71,6 +72,8 @@ class reverse_iterator
      reverse_iterator() : _iter() { }
      explicit reverse_iterator(iterator_type iter) : _iter(iter) { }
      reverse_iterator(const reverse_iterator<Iter>& iter) : _iter(iter.base()) { }
+     template <typename U>
+     reverse_iterator(const reverse_iterator<U> & copy) : _iter(copy.base()) {}
      iterator_type base() const { return (_iter); }
      reference operator*() const { Iter   tmp = _iter; tmp--; return (*tmp); }
      reverse_iterator operator+(difference_type n) const { return (reverse_iterator(_iter - n)); }
@@ -103,34 +106,34 @@ class reverse_iterator
 };
 
 // relational operators
-template <class Iterator>
+template <class Iterator, class Iter>
 bool operator==(const reverse_iterator<Iterator>& lhs,
-                   const reverse_iterator<Iterator>& rhs) {
+                   const reverse_iterator<Iter>& rhs) {
     return (lhs.base() == rhs.base());
 }
-template <class Iterator>
+template <class Iterator, class Iter>
 bool operator!=(const reverse_iterator<Iterator>& lhs,
-                   const reverse_iterator<Iterator>& rhs) {
+                   const reverse_iterator<Iter>& rhs) {
     return (lhs.base() != rhs.base());
 }
-template <class Iterator>
+template <class Iterator, class Iter>
 bool operator<(const reverse_iterator<Iterator>& lhs,
-                   const reverse_iterator<Iterator>& rhs) {
+                   const reverse_iterator<Iter>& rhs) {
     return (lhs.base() > rhs.base());
 }
-template <class Iterator>
+template <class Iterator, class Iter>
 bool operator<=(const reverse_iterator<Iterator>& lhs,
-                   const reverse_iterator<Iterator>& rhs) {
+                   const reverse_iterator<Iter>& rhs) {
     return (lhs.base() >= rhs.base());
 }
-template <class Iterator>
+template <class Iterator, class Iter>
 bool operator>(const reverse_iterator<Iterator>& lhs,
-                   const reverse_iterator<Iterator>& rhs) {
+                   const reverse_iterator<Iter>& rhs) {
     return (lhs.base() < rhs.base());
 }
-template <class Iterator>
+template <class Iterator, class Iter>
 bool operator>=(const reverse_iterator<Iterator>& lhs,
-                   const reverse_iterator<Iterator>& rhs) {
+                   const reverse_iterator<Iter>& rhs) {
     return (lhs.base() <= rhs.base());
 }
 
@@ -146,6 +149,119 @@ typename reverse_iterator<Iterator>::difference_type operator-(
     const reverse_iterator<Iterator>& rhs) {
     return (rhs.base() - lhs.base());
 }
+
+// has_iterator_category
+
+// distance
+template<typename It>
+typename iterator_traits<It>::difference_type
+do_distance(It first, It last, input_iterator_tag) {
+    typename iterator_traits<It>::difference_type   result = 0;
+
+    while (first != last) {
+        first++;
+        result++;
+    }
+    return (result);
+}
+
+template<typename It>
+typename iterator_traits<It>::difference_type
+do_distance(It first, It last, random_access_iterator_tag) {
+    return (last - first);
+}
+
+template<typename It>
+typename iterator_traits<It>::difference_type
+distance(It first, It last) {
+    return (ft::do_distance(first, last, typename iterator_traits<It>::iterator_category()));
+}
+
+// is_input_iterator
+/* template<typename Tag, typename = void>
+struct is_iterator {
+    static const bool value = false;
+};
+
+template<typename It>
+struct is_iterator<It, typename ft::enable_if<!is_same<typename ft::iterator_traits<It>::value_type, void>::value>::type> {
+    static const bool value = true;
+}; */
+template <typename T>
+struct is_iterator {
+    template <typename U>
+    static char test(typename ft::iterator_traits<U>::pointer* x);
+
+    template <typename U>
+    static long test(U* x);
+
+    static const bool value = sizeof(test<T>(nullptr)) == 1;
+};
+
+/* template<>
+struct is_iterator<input_iterator_tag> {
+    static const bool value = true;
+};
+
+template<>
+struct is_iterator<forward_iterator_tag> {
+    static const bool value = true;
+};
+
+template<>
+struct is_iterator<bidirectional_iterator_tag> {
+    static const bool value = true;
+};
+
+template<>
+struct is_iterator<random_access_iterator_tag> {
+    static const bool value = true;
+}; */
+
+// is_input_iterator
+template<typename Tag>
+struct is_input_iterator {
+    static const bool value = false;
+};
+
+template<>
+struct is_input_iterator<input_iterator_tag> {
+    static const bool value = true;
+};
+
+// is_input_iterator
+template<typename Tag>
+struct is_forward_iterator {
+    static const bool value = false;
+};
+
+template<>
+struct is_forward_iterator<forward_iterator_tag> {
+    static const bool value = true;
+};
+
+// is_input_iterator
+template<typename Tag>
+struct is_bidirectional_iterator {
+    static const bool value = false;
+};
+
+template<>
+struct is_bidirectional_iterator<bidirectional_iterator_tag> {
+    static const bool value = true;
+};
+
+// is_input_iterator
+template<typename Tag>
+struct is_random_access_iterator {
+    static const bool value = false;
+};
+
+template<>
+struct is_random_access_iterator<random_access_iterator_tag> {
+    static const bool value = true;
+};
+
 /*
 template <typename Iterator>
 bool operator==(const reverse_iterator<Iterator> & lhs, const Iterator & rhs) {
