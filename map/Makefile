@@ -14,7 +14,7 @@ deps		=  $(objects:%.o=%.d)
 
 sanit 	= -fsanitize=address
 linker	= clang++
-flags	= -Wall -Wextra -Werror -g -std=c++98 $(sanit)
+flags	= -Wall -Wextra -Werror -g -std=c++98 #$(sanit)
 sanit	= -fsanitize=address
 std		= -std=c++98
 
