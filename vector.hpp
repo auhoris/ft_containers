@@ -61,12 +61,12 @@ class vector {
      vector(InputIterator first, InputIterator last,
              const allocator_type& alloc = allocator_type(),
              typename std::enable_if<!is_integral<InputIterator>::value>::type* = 0) : _alloc(alloc), _vector(0), _used_size(0), _capacity(0) {
-         difference_type  n = 0;
+         difference_type  distance = 0;
 
-         n = ft::distance(first, last);
-         reserve(n);
+         distance = ft::distance(first, last);
+         reserve(distance);
          std::uninitialized_copy(first, last, _vector);
-         _used_size = n;
+         _used_size = distance;
      }
      // Copy construcor: copies a container
      vector(const vector& copy) :
