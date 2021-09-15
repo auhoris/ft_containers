@@ -37,7 +37,7 @@ class map {
      };
 
  public:
-     typedef rbtree<key_type, value_type, value_compare, Alloc>     rb_type;
+     typedef rbtree<value_type, value_compare, Alloc>     rb_type;
      typedef Alloc                                      allocator_type;
      typedef typename rb_type::reference                reference;
      typedef typename rb_type::const_reference          const_reference;
@@ -51,7 +51,7 @@ class map {
      typedef typename rb_type::size_type                size_type;
 
  private:
-     rbtree<key_type, value_type, value_compare, Alloc>   t;
+     rbtree<value_type, value_compare, Alloc>   t;
 
  public:
      // Default things
