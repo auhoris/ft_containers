@@ -8,18 +8,13 @@
 namespace ft {
 
 template<typename Value, bool IsConst>
-class RBTreeIterator : public iterator<std::bidirectional_iterator_tag, Value> {
+class RBTreeIterator : public iterator<bidirectional_iterator_tag, Value> {
  public:
      typedef typename conditional<IsConst, const Value, Value>::type    value_type;
      typedef typename conditional<IsConst, const Value*, Value*>::type  pointer;
      typedef typename conditional<IsConst, const Value&, Value&>::type  reference;
      typedef random_access_iterator_tag                                 iterator_category;
      typedef ptrdiff_t                                                  difference_type;
-     /* typedef std::bidirectional_iterator_tag    iterator_category;
-     typedef Value                              value_type;
-     typedef std::ptrdiff_t                     difference_type;
-     typedef Value*                             pointer;
-     typedef Value&                             reference; */
 
  protected:
      typedef Node<Value>* link_type;
@@ -39,6 +34,9 @@ class RBTreeIterator : public iterator<std::bidirectional_iterator_tag, Value> {
          _node = copy._node;
          return (*this);
      }
+     operator RBTreeIterator<Value, true>() const {
+         return (RBTreeIterator<Value, true>(_node));
+     }
 
      // logical
      bool   operator==(RBTreeIterator<Value, IsConst> const & other) { return (_node == other._node); }
@@ -52,11 +50,12 @@ class RBTreeIterator : public iterator<std::bidirectional_iterator_tag, Value> {
                  _node = _node->left;
          } else {
              link_type p_node = _node->parent;
-             while (p_node->right == _node) {
+             while (p_node->parent &&  p_node->right == _node) {
                  _node = p_node;
                  p_node = _node->parent;
              }
-             _node = p_node;
+             if (_node->right != p_node)
+                 _node = p_node;
          }
          return (*this);
      }

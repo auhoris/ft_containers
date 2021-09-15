@@ -5,14 +5,10 @@
 #include <memory>
 #include <vector>
 
-void test(int n) {
-    std::cout << n << "\n";
-}
-
-template<typename InputIterator>
-void test(InputIterator first, typename ft::enable_if<ft::is_iterator<InputIterator>::value>::type* = 0) {
-    (void)first;
-    std::cout << ft::is_iterator<InputIterator>::value << "\n";
+void    test() {
+    for (int i = 0; i < 5; i++) {
+        std::cout << "bla" << "\n";
+    }
 }
 
 int main(void) {
@@ -110,18 +106,7 @@ int main(void) {
     std::cout << "v1[8]->" << (v1[8] == 2) << "\n"; */
 
     // size_t n = 10;
-    ft::vector<int>     test(10, 10);
-    // ft::vector<int> joap(test.begin(), test.end());
-    ft::vector<int> vec2(test.begin(), test.end());
-    /* test.show_data();
-    joap.show_data();
-    joap.show_data(); */
-    ft::vector<int>::const_reverse_iterator it = vec2.rend();
-    it--;
-    for (; it != vec2.rbegin(); it--)
-    {
-        std::cout << *it << "\n";
-    }
+    // test.rend
     // vec2.show_data();
     // std::vector<int> vec1("sd", n);
     // test(0);
@@ -155,6 +140,9 @@ int main(void) {
     v1_it--;
     for (size_t i = 0; i < v1.size(); i++)
         std::cout << "->" << (*(v1_it - i) == arr1[i]) << "\n"; */
+    ft::vector<int> vec(10, 10);
+    ft::vector<int>::const_iterator   beg = vec.begin();
+    ft::vector<int>::iterator   end;
 
     return 0;
 }

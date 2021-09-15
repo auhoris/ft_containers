@@ -60,7 +60,7 @@ class vector {
      template <class InputIterator>
      vector(InputIterator first, InputIterator last,
              const allocator_type& alloc = allocator_type(),
-             typename std::enable_if<!is_integral<InputIterator>::value>::type* = 0) : _alloc(alloc), _vector(0), _used_size(0), _capacity(0) {
+             typename enable_if<!is_integral<InputIterator>::value>::type* = 0) : _alloc(alloc), _vector(0), _used_size(0), _capacity(0) {
          difference_type  distance = 0;
 
          distance = ft::distance(first, last);

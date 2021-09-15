@@ -4,7 +4,13 @@ srcdir	= srcs
 objdir	= objs
 incdir	= $(srcdir)/includes
 
-inclds	= vector.hpp
+# utils_h	=	algorithm.hpp, iterator.hpp, Node.hpp,
+# 			rbtree.hpp, rbtree_iterator.hpp, type_traits.hpp,
+# 			utility.hpp, vector_iterator.hpp
+# utils	= $(addprefix utils/, $(utils_h))
+
+inclds	=	vector.hpp, map.hpp, stack.hpp,
+			#$(utils)
 srcs	= main.cpp
 sources = $(addprefix $(srcdir)/, $(srcs))
 incld	= $(addprefix $(incdir)/, $(inclds))
