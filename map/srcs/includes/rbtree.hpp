@@ -7,6 +7,7 @@
 # include <memory>
 # include <string>
 # include <utility>
+# include "../../../utils/utility.hpp"
 # include "../../../utils/rbtree_iterator.hpp"
 
 # define YELLOW  "\033[33m"      /* Yellow */
@@ -16,14 +17,11 @@
 
 namespace ft {
 
-template<typename T>
-class BidirectionalIterator;
-
-template <class Key,
-         class Value,
-         class Compare = std::less<Value>,
-         class Alloc = std::allocator<Value>,
-         class Node_alloc = std::allocator<Node<Value> > >
+template < class Key,
+           class Value,
+           class Compare = std::less<Value>,
+           class Alloc = std::allocator<Value>,
+           class Node_alloc = std::allocator<Node<Value> > >
 class rbtree {
  public:    // Main Typedefs
      typedef Key                                                    key_type;
@@ -49,7 +47,7 @@ class rbtree {
      link_type                      _root;
      link_type                      _header;
      link_type                      _nil;    // для экономии памяти - будет являться конечным узлом
-     std::less<Value>               _comp;
+     Compare                        _comp;
      std::allocator<value_type>     _valloc;
      std::allocator<Node>           _nalloc; // hz zachem
      size_type                      _size;
@@ -65,13 +63,14 @@ class rbtree {
      link_type&       left(link_type x) const { return (x->left); }
      link_type&       right(link_type x) const { return (x->right); }
      link_type&       parent(link_type x) { return (x->parent); }
+
+     // Utils ==========================================
      link_type&       leftmost() { return (left(_header)); }
      link_type&       leftmost() const { return (left(_header)); }
      link_type&       rightmost() { return (right(_header)); }
      link_type&       rightmost() const { return (right(_header)); }
      link_type        minimum(link_type x);
      link_type        maximum(link_type x);
-     // Utils ==========================================
      pointer          create_value(const_reference val);
      link_type        create_node(link_type childs = NULL, link_type parent = NULL, pointer value = NULL);
      bool             _is_red(link_type nd);
@@ -81,120 +80,15 @@ class rbtree {
      void             _rotate_right(link_type nd);
      void             _rotate_left(link_type nd);
      void             _swap_colors(link_type nd);
-     void             _transplant(link_type u, link_type v) {
-         if (parent(u) == _header) 
-             _root = v;
-         else if (u == left(u->parent))
-             left(u->parent) = v;
-         else
-             right(u->parent) = v;
-         parent(v) = parent(u);
-     }
-     void             _delete_fixup(link_type node) {
-         link_type  brother;
-
-         while (node != _root && color(node) == false) {
-             if (node == left(node->parent)) {
-                 brother = right(node->parent);
-                 if (color(brother) == true) {
-                     color(brother) = false;
-                     color(node->parent) = true;
-                     _rotate_left(parent(node));
-                     brother = right(node->parent);
-                 }
-                 if (color(brother->left) == false && color(brother->right) == false) {
-                     color(brother) = true;
-                     node = parent(node);
-                 } else {
-                     if (color(brother->right) == false) {
-                         color(brother->left) = false;
-                         color(brother) = true;
-                         _rotate_right(brother);
-                         brother = right(node->parent);
-                     }
-                     color(brother) = color(node->parent);
-                     color(node->parent) = false;
-                     color(brother->right) = false;
-                     _rotate_left(parent(node));
-                     break;
-                 }
-             } else {
-                 brother = left(node->parent);
-                 if (_is_red(brother)) {
-                     color(brother) = false;
-                     color(node->parent) = true;
-                     _rotate_right(parent(node));
-                     brother = left(node->parent);
-                 }
-                 if (color(brother->left) == false && color(brother->right) == false) {
-                     color(brother) = true;
-                     node = parent(node);
-                 } else {
-                     if (color(brother->left) == false) {
-                         color(brother->right) = false;
-                         color(brother) = true;
-                         _rotate_left(brother);
-                         brother = left(node->parent);
-                     }
-                     color(brother) = color(node->parent);
-                     color(node->parent) = false;
-                     color(brother->left) = false;
-                     _rotate_right(parent(node));
-                     break;
-//                     node = _root;
-                 }
-             }
-         }
-         color(node) = false;
-     }
-     void               _clear_node(link_type node) {
-         _valloc.destroy(node->value);
-         _valloc.deallocate(node->value, 1);
-         _nalloc.destroy(node);
-         _nalloc.deallocate(node, 1);
-     }
-     void             _delete_node(link_type node) {
-         link_type  y = node;
-         bool       y_color = color(y);
-         link_type  x;
-
-         if (left(node) == _nil) {
-             x = right(node);
-             _transplant(node, right(node));
-         } else if (right(node) == _nil) {
-             x = left(node);
-             _transplant(node, left(node));
-         } else {
-             y = minimum(right(node));
-             y_color = color(y);
-             x = right(y);
-             if (parent(y) == node)
-                 parent(x) = y;
-             else {
-                 _transplant(y, right(y));
-                 right(y) = right(node);
-                 parent(y->right) = y;
-             }
-             _transplant(node, y);
-             left(y) = left(node);
-             parent(y->left) = y;
-             color(y) = color(node);
-         }
-         if (y_color == false)
-             _delete_fixup(x);
-         if (_size != 1) {
-             leftmost() = minimum(_root);
-             rightmost() = maximum(_root);
-         } else {
-             leftmost() = _header;
-             rightmost() = _header;
-         }
-        _clear_node(node);
-        _size--;
-     }
+     void             _transplant(link_type u, link_type v);
+     void             _delete_fixup(link_type node);
+     void               _clear_node(link_type node);
+     void             _delete_node(link_type node);
      void             _show(link_type nd, int place);
 
  public:    // Member funcs
+     link_type      search(const key_type & val);
+
      // Default things
      explicit rbtree(const key_compare& comp = key_compare(),
              const allocator_type& allocator = allocator_type(),
@@ -203,37 +97,42 @@ class rbtree {
      rbtree(InputIterator first, InputIterator last, 
              const key_compare & comp = key_compare(),
              const allocator_type & allocator = allocator_type(),
-             const node_allocator_type & nallocator = node_allocator_type());
+             const node_allocator_type & nallocator = node_allocator_type(),
+             typename enable_if<!is_integral<InputIterator>::value>::type* = NULL);
      rbtree(const rbtree & copy);
      ~rbtree();
      rbtree&    operator=(const rbtree & copy);
 
-     // Random helpers
-     link_type      search(const key_type & val);
-     void           show();
+     // Iterators
+     iterator begin() { return (leftmost()); }
+     const_iterator begin() const { return (leftmost()); }
+     iterator end() { return (_header); }
+     const_iterator end() const { return (_header); }
+     reverse_iterator rbegin() { return (reverse_iterator(end())); }
+     const_reverse_iterator rbegin() const { return (reverse_iterator(end())); }
+     reverse_iterator rend() { return (reverse_iterator(begin())); }
+     const_reverse_iterator rend() const { return (reverse_iterator(begin())); }
+
+     // Capacity
+     bool empty() const { return (_size == 0); }
+     size_type  size() const { return (_size); }
+     size_type max_size() const { return (_nalloc.max_size()); }
 
      // Modifiers
-     typedef std::pair<iterator, bool> pair_iterator_bool;
+     typedef ft::pair<iterator, bool> pair_iterator_bool;
      pair_iterator_bool     insert(const_reference val);
      iterator               insert(iterator position, const value_type& val);
      template <class InputIterator>
-     void insert (InputIterator first, InputIterator last,
-             typename enable_if<!is_integral<InputIterator>::value>::type* = NULL) {
-         iterator it;
-
-         it = first;
-         while (first != last) {
-             it = insert(it, *first);
-             first++;
-         }
-     }
+     void insert(InputIterator first, InputIterator last,
+             typename enable_if<!is_integral<InputIterator>::value>::type* = NULL)
+     { while (first != last) insert(*first++); }
      void erase(iterator position) {
          if (position.node() == _header)
              return;
          _delete_node(position.node());
      }
      size_type erase(const key_type& k) {
-         erase(search(k));
+         erase(itearator(search(k)));
          return (1);
      }
      void erase(iterator first, iterator last) {
@@ -247,18 +146,45 @@ class rbtree {
      }
      void clear() { erase(begin(), end()); }
 
-     // Iterators
-     iterator begin() { return (leftmost()); }
-     const_iterator begin() const { return (leftmost()); }
-     iterator end() { return (_header); }
-     const_iterator end() const { return (_header); }
-     reverse_iterator rbegin() { return (reverse_iterator(end())); }
-     const_reverse_iterator rbegin() const { return (reverse_iterator(end())); }
-     reverse_iterator rend() { return (reverse_iterator(begin())); }
-     const_reverse_iterator rend() const { return (reverse_iterator(begin())); }
-     bool empty() const { return (_size == 0); }
-     size_type  size() { return (_size); }
-     size_type max_size() const { return (_nalloc.max_size()); }
+     // Operations
+     iterator find(const key_type& k) {
+         link_type  found = search(k);
+         if (found == _nil)
+             return (end());
+         return (itearator(search(k)));
+     }
+     const_iterator find(const key_type& k) const {
+         link_type  found = search(k);
+         if (found == _nil)
+             return (end());
+         return (const_iterator(search(k)));
+
+     }
+     size_type count(const key_type& k) const { return (search(k) != _nil ? 1 : 0); }
+     iterator lower_bound(const key_type& k) {
+         return (find(k));
+     }
+     const_iterator lower_bound(const key_type& k) const {
+         return (find(k));
+     }
+     iterator upper_bound(const key_type& k) {
+         iterator   found = find(k);
+         return (++found);
+     }
+     const_iterator upper_bound(const key_type& k) const {
+         iterator   found = find(k);
+         return (++found);
+     }
+     typedef ft::pair<const_iterator, const_iterator>  const_iteartor_pair;
+     typedef ft::pair<iterator, iterator>              iteartor_pair;
+     const_iteartor_pair    equal_range(const key_type& k) const { return (ft::make_pair(lower_bound(k), upper_bound(k))); }
+     iteartor_pair          equal_range(const key_type& k) { return (ft::make_pair(lower_bound(k), upper_bound(k))); }
+
+     // Allocator
+     allocator_type get_allocator() const { return (allocator_type()); }
+
+     // Random helpers
+     void           show();
 };
 
 template <class Key, class T, class Compare, class Alloc, class Node_alloc>
@@ -273,37 +199,32 @@ rbtree<Key, T, Compare, Alloc, Node_alloc>::rbtree(const key_compare& comp,
      rightmost() = _header;
 }
 
-/* template <class Key, class T, class Compare, class Alloc, class Node_alloc>
+template <class Key, class T, class Compare, class Alloc, class Node_alloc>
 template <class InputIterator>
-rbtree<Key, T, Compare, Alloc, Node_alloc>::rbtree(InputIterator first, InputIterator last,
+rbtree<Key, T, Compare, Alloc, Node_alloc>::rbtree(InputIterator first, InputIterator last, 
         const key_compare & comp,
         const allocator_type & allocator,
-        const node_allocator_type & nallocator) :
-    _root(NULL),
-    _comp(comp),
-    _value_alloc(allocator),
-    _node_alloc(nallocator),
-    _size(0) {
-    (void)first;
-    (void)last;
-    _nil = _node_alloc.allocate(1);
-    _node_alloc.construct(_nil, node(NULL));
-    _nil->color = false;
-    //Implenet later
+        const node_allocator_type & nallocator,
+        typename enable_if<!is_integral<InputIterator>::value>::type*) : _comp(comp), _valloc(allocator), _nalloc(nallocator) {
+     _nil = create_node();
+     _root = _nil;
+     _header = create_node(_root, NULL, create_value(value_type()));
+     color(_header) = true;
+     leftmost() = _header;
+     rightmost() = _header;
+     insert(first, last);
 }
 
 template <class Key, class T, class Compare, class Alloc, class Node_alloc>
-rbtree<Key, T, Compare, Alloc, Node_alloc>::rbtree(const rbtree & copy) :
-    _root(NULL),
-    _comp(copy._comp),
-    _value_alloc(copy._value_alloc),
-    _node_alloc(copy._node_alloc),
-    _size(0) {
-    _nil = _node_alloc.allocate(1);
-    _node_alloc.construct(_nil, node(NULL));
-    _nil->color = false;
-    //Implenet later
-} */
+rbtree<Key, T, Compare, Alloc, Node_alloc>::rbtree(const rbtree & copy) : _comp(copy._comp), _valloc(copy._valloc), _nalloc(copy._nalloc), _size(0) {
+     _nil = create_node();
+     _root = _nil;
+     _header = create_node(_root, NULL, create_value(value_type()));
+     color(_header) = true;
+     leftmost() = _header;
+     rightmost() = _header;
+     insert(copy.begin(), copy.end());
+}
 
 template <class Key, class T, class Compare, class Alloc, class Node_alloc>
 rbtree<Key, T, Compare, Alloc, Node_alloc>::~rbtree() {
@@ -322,14 +243,13 @@ rbtree<Key, T, Compare, Alloc, Node_alloc>::
 operator=(const rbtree & copy) {
     if (this == &copy)
         return (*this);
+    insert(copy.begin(), copy.end());
     return (*this);
 }
 
 //  Helper Functions =============================
 template <class Key,class T, class Compare, class Alloc, class Node_alloc>
-bool   rbtree<Key, T, Compare, Alloc, Node_alloc>::_is_red(Node * nd) {
-    return (color(nd) == true);
-}
+bool   rbtree<Key, T, Compare, Alloc, Node_alloc>::_is_red(Node * nd) { return (color(nd) == true); }
 
 template <class Key,class T, class Compare, class Alloc, class Node_alloc>
 typename rbtree<Key, T, Compare, Alloc, Node_alloc>::pair_iterator_bool
@@ -346,8 +266,8 @@ insert(const_reference val) {
         curr_tmp = comp ? left(curr_tmp) : right(curr_tmp);
     }
     if (searched != _nil)
-        return (std::make_pair(searched, false));
-    return (std::make_pair(_insert(curr_tmp, p_tmp, val), true));
+        return (ft::make_pair(searched, false));
+    return (ft::make_pair(_insert(curr_tmp, p_tmp, val), true));
 }
 
 template <class Key,class T, class Compare, class Alloc, class Node_alloc>
@@ -369,6 +289,7 @@ rbtree<Key, T, Compare, Alloc, Node_alloc>::insert(iterator position, const valu
     return (insert(val).first);
 }
 
+// HELPERS SECTION
 template <class Key, class T, class Compare, class Alloc, class Node_alloc>
 typename rbtree<Key, T, Compare, Alloc, Node_alloc>::iterator
 rbtree<Key, T, Compare, Alloc, Node_alloc>::
@@ -500,6 +421,124 @@ _swap_colors(link_type nd) {
 }
 
 template <class Key,class T, class Compare, class Alloc, class Node_alloc>
+void             rbtree<Key, T, Compare, Alloc, Node_alloc>::_transplant(link_type u, link_type v) {
+    if (parent(u) == _header) 
+        _root = v;
+    else if (u == left(u->parent))
+        left(u->parent) = v;
+    else
+        right(u->parent) = v;
+    parent(v) = parent(u);
+}
+template <class Key,class T, class Compare, class Alloc, class Node_alloc>
+void             rbtree<Key, T, Compare, Alloc, Node_alloc>::_delete_fixup(link_type node) {
+    link_type  brother;
+
+    while (node != _root && color(node) == false) {
+        if (node == left(node->parent)) {
+            brother = right(node->parent);
+            if (color(brother) == true) {
+                color(brother) = false;
+                color(node->parent) = true;
+                _rotate_left(parent(node));
+                brother = right(node->parent);
+            }
+            if (color(brother->left) == false && color(brother->right) == false) {
+                color(brother) = true;
+                node = parent(node);
+            } else {
+                if (color(brother->right) == false) {
+                    color(brother->left) = false;
+                    color(brother) = true;
+                    _rotate_right(brother);
+                    brother = right(node->parent);
+                }
+                color(brother) = color(node->parent);
+                color(node->parent) = false;
+                color(brother->right) = false;
+                _rotate_left(parent(node));
+                break;
+            }
+        } else {
+            brother = left(node->parent);
+            if (_is_red(brother)) {
+                color(brother) = false;
+                color(node->parent) = true;
+                _rotate_right(parent(node));
+                brother = left(node->parent);
+            }
+            if (color(brother->left) == false && color(brother->right) == false) {
+                color(brother) = true;
+                node = parent(node);
+            } else {
+                if (color(brother->left) == false) {
+                    color(brother->right) = false;
+                    color(brother) = true;
+                    _rotate_left(brother);
+                    brother = left(node->parent);
+                }
+                color(brother) = color(node->parent);
+                color(node->parent) = false;
+                color(brother->left) = false;
+                _rotate_right(parent(node));
+                break;
+           }
+        }
+    }
+    color(node) = false;
+}
+
+template <class Key,class T, class Compare, class Alloc, class Node_alloc>
+void               rbtree<Key, T, Compare, Alloc, Node_alloc>::_clear_node(link_type node) {
+    _valloc.destroy(node->value);
+    _valloc.deallocate(node->value, 1);
+    _nalloc.destroy(node);
+    _nalloc.deallocate(node, 1);
+}
+
+template <class Key,class T, class Compare, class Alloc, class Node_alloc>
+void             rbtree<Key, T, Compare, Alloc, Node_alloc>::_delete_node(link_type node) {
+    link_type  y = node;
+    bool       y_color = color(y);
+    link_type  x;
+
+    if (left(node) == _nil) {
+        x = right(node);
+        _transplant(node, right(node));
+    } else if (right(node) == _nil) {
+        x = left(node);
+        _transplant(node, left(node));
+    } else {
+        y = minimum(right(node));
+        y_color = color(y);
+        x = right(y);
+        if (parent(y) == node)
+            parent(x) = y;
+        else {
+            _transplant(y, right(y));
+            right(y) = right(node);
+            parent(y->right) = y;
+        }
+        _transplant(node, y);
+        left(y) = left(node);
+        parent(y->left) = y;
+        color(y) = color(node);
+    }
+    if (y_color == false)
+        _delete_fixup(x);
+    if (_size != 1) {
+        leftmost() = minimum(_root);
+        rightmost() = maximum(_root);
+    } else {
+        leftmost() = _header;
+        rightmost() = _header;
+    }
+   _clear_node(node);
+   _size--;
+}
+
+
+template <class Key,class T, class Compare, class Alloc, class Node_alloc>
 typename rbtree<Key, T, Compare, Alloc, Node_alloc>::link_type
 rbtree<Key, T, Compare, Alloc, Node_alloc>::search(const key_type & k) {
     link_type   x;
@@ -587,7 +626,7 @@ rbtree<Key, T, Compare, Alloc, Node_alloc>::create_node(link_type childs, link_t
     _nalloc.construct(created, Node(value, childs, parent));
     color(created) = value != NULL;
     return (created);
-}
+}   // HELPERS SECTION END
 
 }   // namespace ft
 

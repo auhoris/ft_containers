@@ -4,7 +4,7 @@ srcdir	= srcs
 objdir	= objs
 incdir	= $(srcdir)/includes
 
-inclds	= rbtree.hpp bidirectional_iterator.hpp reverse_iterator.hpp
+inclds	= rbtree.hpp map.hpp
 srcs	= main.cpp
 sources = $(addprefix $(srcdir)/, $(srcs))
 incld	= $(addprefix $(incdir)/, $(inclds))

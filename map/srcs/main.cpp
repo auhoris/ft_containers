@@ -1,4 +1,4 @@
-#include "includes/rbtree.hpp"
+#include "includes/map.hpp"
 #include <cstdlib>
 #include <ctime>
 #include <functional>
@@ -8,7 +8,13 @@
 #include <map>
 #include <iostream>
 
-#define NODES 25
+#define NODES 100
+
+int    start;
+int    end;
+int    num;
+
+std::pair<int, char> rand_pair();
 
 template<class Key, class T>
 void    make_tree(ft::rbtree<Key, T> &tree) {
@@ -16,19 +22,51 @@ void    make_tree(ft::rbtree<Key, T> &tree) {
 
     for (int i = 0; i < NODES + 1; i++) {
         r_num = rand() % NODES;
-        // std::cout << "i = " << i << "\t" << "number = " << number << "\n";
-        // if (i == 1)
-        //     continue;
         tree.insert(std::make_pair(i, static_cast<char>(65 + (rand() % 25))));
     }
+}
+
+template<class Key, class T>
+void    fill_map(ft::map<Key, T> & map) {
+
+    start = clock();
+    for (int i = 0; i < NODES + 1; i++) {
+        map.insert(std::make_pair(i, static_cast<char>(65 + (rand() % 25))));
+    }
+    end = clock();
+    std::cout << "ft: " << std::endl;
+    std::cout << "it took [ " << end - start << " ] ticks, or "
+        << ((float)end - start)/CLOCKS_PER_SEC << "seconds.\n";
+}
+
+template<class Key, class T>
+void    std_fill_map(std::map<Key, T> & map) {
+
+    start = clock();
+    for (int i = 0; i < NODES + 1; i++) {
+        map.insert(std::make_pair(i, static_cast<char>(65 + (rand() % 25))));
+    }
+    end = clock();
+    std::cout << "ft: " << std::endl;
+    std::cout << "it took [ " << end - start << " ] ticks, or "
+        << ((float)end - start)/CLOCKS_PER_SEC << "seconds.\n";
+}
+
+template<class Key, class T>
+void    show_map(ft::map<Key, T> & map) {
+    typename ft::map<Key, T>::iterator it = map.begin();
+
+    std::cout << "[ " << std::addressof(map) << " ]" << "\n";
+    for (; it != map.end(); it++) {
+        std::cout << it->first << " ";
+    }
+    std::cout << "\n";
 }
 
 std::pair<int, char> rand_pair() {
     std::pair<int, char>    par;
 
     par = std::make_pair(rand() % 100, static_cast<char>(65 + (rand() % 25)));
-    // std::cout << par.first << "\t";
-    // std::cout << par.second << "\n";
     return (par);
 }
 
@@ -40,44 +78,26 @@ void    show_stdmap(std::map<int, char> map) {
     std::cout << "\n";
 }
 
-template<class Key, class T>
-void    show_rbtree(ft::rbtree<Key, T> &rbtree) {
-    std::cout << "mytree: " << "\n";
-    ft::rbtree<int, std::pair<int, char> >::iterator   it = rbtree.begin();
-    ft::rbtree<int, std::pair<int, char> >::iterator   tmp;
-    int i = 0;
+int main(void) {
 
-    while (it != rbtree.end()) {
-        tmp = it;
-        it++;
-        std::cout << "[" << i << "]"<< tmp->first << " ";
-        rbtree.erase(tmp);
-        i++;
-    }
-    std::cout << "\n";
-}
+    ft::map<int, char>  map1;
+    std::map<int, char>  stdap;
+    map1[1] = 'c';
+    show_map(map1);
 
-int main(void)
-{
-    srand(time(0));
-    ft::rbtree<int, std::pair<int, char> >      test;
+    ft::map<char,std::string> mymap;
 
-    make_tree(test);
-    test.show();
-    test.clear();
-    test.show();
-    // ft::rbtree<int, std::pair<int, char> >::iterator    it = test.begin();
-    // test.show();
-    // test.erase(6);
-    // test.show();
-    // it = test.begin();
-    // test.erase(it);
-    // test.show();
-    // rev_it = test.rbegin();
-    // while (rev_it != test.rend()) {
-    //     std::cout << rev_it->first  << " ";
-    //     rev_it++;
-    // }
-    // std::cout << "\n";
+    mymap['a']="an element";
+    mymap['b']="another element";
+    mymap['c']=mymap['b'];
+
+    std::cout << "mymap['a'] is " << mymap['a'] << '\n';
+    std::cout << "mymap['b'] is " << mymap['b'] << '\n';
+    std::cout << "mymap['c'] is " << mymap['c'] << '\n';
+    std::cout << "mymap['d'] is " << mymap['d'] << '\n';
+
+    std::cout << "mymap now contains " << mymap.size() << " elements.\n";
+
+    // show_map(map2);
     return 0;
 }
