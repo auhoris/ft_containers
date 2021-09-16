@@ -44,6 +44,8 @@ class RBTreeIterator : public iterator<bidirectional_iterator_tag, Value> {
 
      // arithmetic
      RBTreeIterator<Value, IsConst>&   operator++() {
+         if (_node->color == true && _node->parent == NULL)
+             return (*this);
          if (_node->right->right != NULL) {
              _node = _node->right;
              while (_node->left->left != NULL)

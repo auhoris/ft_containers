@@ -131,7 +131,8 @@ class rbtree {
         _delete_node(position.node());
     }
     size_type erase(const value_type& val) {
-        erase(iterato(search(val)));
+        ft::pair<iterator, iterator> range = equal_range(val);
+        erase(range.first, range.second);
         return (1);
     }
     void erase(iterator first, iterator last) {
@@ -159,17 +160,23 @@ class rbtree {
     size_type count(const value_type& val) const {
         return (search(val) != _nil ? 1 : 0);
     }
-    iterator lower_bound(const value_type& val) { return (find(val)); }
+    iterator lower_bound(const value_type& val) {
+        link_type found = search(val);
+        iterator beg = begin();
+
+        if (found != _nil) return (iterator(found));
+        while (beg != end() && _comp(value(beg.node()), val)) beg++;
+        return (beg);
+    }
     const_iterator lower_bound(const value_type& val) const {
-        return (find(val));
+        return (lower_bound(val));
     }
     iterator upper_bound(const value_type& val) {
-        iterator found = find(val);
-        return (++found);
+        if (search(val) == _nil) return (lower_bound(val));
+        return (++lower_bound(val));
     }
     const_iterator upper_bound(const value_type& val) const {
-        iterator found = find(val);
-        return (++found);
+        return (upper_bound(val));
     }
     typedef ft::pair<const_iterator, const_iterator> const_iterator_pair;
     typedef ft::pair<iterator, iterator> iterator_pair;
@@ -206,7 +213,7 @@ rbtree<T, Compare, Alloc, Node_alloc>::rbtree(
     InputIterator first, InputIterator last, const key_compare& comp,
     const allocator_type& allocator, const node_allocator_type& nallocator,
     typename enable_if<!is_integral<InputIterator>::value>::type*)
-    : _comp(comp), _valloc(allocator), _nalloc(nallocator) {
+    : _comp(comp), _valloc(allocator), _nalloc(nallocator), _size(0) {
     _nil = create_node();
     _root = _nil;
     _header = create_node(_root, NULL, create_value(value_type()));
@@ -542,8 +549,10 @@ rbtree<T, Compare, Alloc, Node_alloc>::search(const value_type& k) {
     link_type x;
 
     x = _root;
-    while (x != _nil && value(x) != k) {
-        if (_comp(k, value(x)))
+    while (x != _nil) {
+        if (!_comp(value(x), k) && !_comp(k, value(x)))
+            break;
+        else if (_comp(k, value(x)))
             x = left(x);
         else
             x = right(x);
