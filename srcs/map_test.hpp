@@ -19,5 +19,6 @@ void erase_test();
 void find_test();
 void lower_upper_bound();
 void mixup();
+void swap();
 
 #endif /* ifndef __SRCS_MAP_TEST_HPP__ */

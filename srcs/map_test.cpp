@@ -10,10 +10,6 @@
 
 #include "utils.hpp"
 
-void test_title(std::string str) {
-    std::cout << "\n-------------------->" << str << ":\n";
-}
-
 template <class Key, class T>
 void show_map(ft::map<Key, T> &map) {
     typename ft::map<Key, T>::iterator it = map.begin();
@@ -68,13 +64,14 @@ void compare_maps(std::map<int, char> std_map, ft::map<int, char> ft_map) {
     bool equal;
 
     equal = compare_maps(std_map.begin(), std_map.end(), ft_map.begin());
-    std::cout << "CONT:\t";
+    std::cout << "content: ";
     checker(equal);
     if (!equal) show_map(ft_map);
 
     equal = std_map.size() == ft_map.size();
-    std::cout << "SIZE:\t";
+    std::cout << "size: ";
     checker(equal);
+    std::cout << "\n";
     if (!equal)
         std::cout << "std: " << std_map.size() << "\t"
                   << "ft: " << ft_map.size() << "\n";
@@ -91,8 +88,8 @@ void constructor_tests() {
     ft::pair<int, char> ft[] = {ft_pair(0), ft_pair(10), ft_pair(23),
                                 ft_pair(1), ft_pair(2),  ft_pair(3)};
 
-    std::cout << "52/Constructor test: "
-              << "\n";
+    test_title("CONSTRUTOR TEST");
+
     start = clock();
     std::map<int, char> std_map(std, std + 6);
     end = clock();
@@ -111,6 +108,7 @@ void constructor_tests() {
     compare_maps(std_map, ft_map);
 
     test_title("ITERATOR TEST");
+
     std::map<int, char> big_map;
     ft::map<int, char> ft_big_map;
 
@@ -138,9 +136,11 @@ void constructor_tests() {
     compare_maps(std_map, ft_map);
 
     test_title("CLEAR CHECK");
+
     checker(ft_map1.empty() == std_map1.empty());
 
     test_title("COPY TEST");
+
     std::cout << "STD:\t";
     start = clock();
     std::map<int, char> std_map2(big_map);
@@ -159,6 +159,7 @@ void constructor_tests() {
     compare_maps(std_map, ft_map);
 
     test_title("CLEAR TEST");
+
     checker(ft_map2.empty() == std_map2.empty());
 }
 
@@ -170,8 +171,6 @@ void insert_test() {
     ft::map<int, char> ft_map;
     std::map<int, char> std_map;
 
-    std::cout << "118/insert() test with: { " << ITER << " } iterations"
-              << "\n";
     test_title("INSERT CONTINUOUSLY TEST");
     start = clock();
     for (size_t i = 0; i < ITER; i++) {
@@ -282,8 +281,6 @@ void erase_test() {
     ft::map<int, char> ft_map;
     std::map<int, char> std_map;
 
-    std::cout << "261/erase() test with { " << ITER << " } iterations"
-              << "\n";
     for (int i = 0; i < ITER; i++) {
         ft_map.insert(ft_pair(i));
         std_map.insert(std_pair(i));
@@ -376,7 +373,13 @@ void erase_test() {
     ft_ticks = end - start;
 
     percentage_compare(std_ticks, ft_ticks);
+    compare_maps(std_map, ft_map);
 
+    ft::map<int, char> ft_map2;
+    std::map<int, char> std_map2;
+
+    std_map2.erase(10);
+    ft_map2.erase(10);
     compare_maps(std_map, ft_map);
 }
 
@@ -386,8 +389,6 @@ void find_test() {
     ft::map<int, char> ft_map;
     std::map<int, char> std_map;
 
-    std::cout << "375/find() test with { " << ITER << " } iterations"
-              << "\n";
     for (int i = 0; i < ITER; i++) {
         ft_map.insert(ft_pair(i));
         std_map.insert(std_pair(i));
@@ -455,9 +456,6 @@ void lower_upper_bound() {
     ft::map<int, char>::iterator ft_it;
     std::map<int, char>::iterator std_it;
 
-    std::cout << "375/lower_upper_bound() test with { " << ITER
-              << " } iterations"
-              << "\n";
     for (int i = 0; i < ITER; i++) {
         ft_map.insert(ft_pair(i));
         std_map.insert(std_pair(i));
@@ -529,7 +527,7 @@ void lower_upper_bound() {
     start = clock();
     ft_map.insert(ft_map.lower_bound(25), ft_map.lower_bound(60));
     end = clock();
-    std::cout << "STD:\t";
+    std::cout << "FT:\t";
     time(start, end);
 
     compare_maps(std_map, ft_map);
@@ -555,7 +553,7 @@ void lower_upper_bound() {
     start = clock();
     ft_map.insert(ft_buffer.lower_bound(10), ft_buffer.upper_bound(230));
     end = clock();
-    std::cout << "STD:\t";
+    std::cout << "FT:\t";
     time(start, end);
 
     compare_maps(std_map, ft_map);
@@ -669,4 +667,42 @@ void mixup() {
     ft_rend1++;
     ft_rend2++;
     checker(*ft_rend1 == *ft_rend2);
+}
+
+void    swap() {
+    test_title("SWAP");
+    std::map<int, char> std_m1;
+    ft::map<int, char> ft_m1;
+    std::map<int, char> std_m2;
+    ft::map<int, char> ft_m2;
+
+    for (size_t i = 0; i < 10; i++) {
+        std_m1.insert(std_pair(i));
+        ft_m1.insert(ft_pair(i));
+    }
+
+    std_m1.swap(std_m2);
+    ft_m1.swap(ft_m2);
+
+    compare_maps(std_m2, ft_m2);
+    compare_maps(std_m1, ft_m1);
+
+    std_m1.clear();
+    ft_m1.clear();
+    for (size_t i = 0; i < ITER; i++) {
+        std_m1.insert(std_pair(i));
+        ft_m1.insert(ft_pair(i));
+    }
+
+    std_m1.swap(std_m2);
+    ft_m1.swap(ft_m2);
+    compare_maps(std_m2, ft_m2);
+    compare_maps(std_m1, ft_m1);
+
+    std_m2.erase(std_m2.lower_bound(10), std_m2.upper_bound(90));
+    std_m2.swap(std_m1);
+    ft_m2.erase(ft_m2.lower_bound(10), ft_m2.upper_bound(90));
+    ft_m2.swap(ft_m1);
+    compare_maps(std_m2, ft_m2);
+    compare_maps(std_m1, ft_m1);
 }

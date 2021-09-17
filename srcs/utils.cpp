@@ -1,4 +1,6 @@
 #include "vector_test.hpp"
+#include <cstdlib>
+#include <ctime>
 #include <iostream>
 
 void time(int start, int end) {
@@ -17,13 +19,44 @@ void percentage_compare(int std_ticks, int ft_ticks) {
     } else {
         std::cout << "FT FASTER BY ";
         per = ((float)ft_ticks / std_ticks) * 100;
-        std::cout << BOLDCYAN << "[" <<  100 -per  << "%]\n" << RESET;
+        std::cout << BOLDCYAN << "[" <<  100 - per  << "%]\n" << RESET;
     }
 }
 
 void checker(bool equal) {
     if (equal)
-        std::cout << GREEN << "[OK]" << RESET << "\n";
+        std::cout << GREEN << "[OK]" << RESET << " ";
     else
-        std::cout << BOLDRED << "[ERROR]" << RESET << "\n";
+        std::cout << BOLDRED << "[ERROR]" << RESET << " ";
 }
+
+void test_title(std::string str) {
+    std::cout << "\n" YELLOW << str << RESET << ":\n";
+}
+
+Test::Test() {
+    srand(time(0));
+
+    bool r = rand() % 2;
+    storage = new int(10);
+    size = 10;
+    if (r)
+        throw 1;
+}
+Test::Test(const Test &other) {
+    storage = new int(10);
+    size = other.size;
+}
+Test::~Test() {
+    delete storage;
+}
+
+Test&	Test::operator=(const Test &other) {
+    if (this == &other)
+        return *this;
+    if (storage != NULL) {
+
+    }
+    return *this;
+}
+

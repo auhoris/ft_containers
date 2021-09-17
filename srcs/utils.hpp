@@ -21,8 +21,27 @@
 #define BOLDCYAN "\033[1m\033[36m"    /* Bold Cyan */
 #define BOLDWHITE "\033[1m\033[37m"   /* Bold White */
 
+#define B_CYAN "\x1b[46;1m" <<
+#define B_RED "\x1b[41;1m" <<
+#define DEFAULT << "\x1b[m"
+
 void time(int start, int end);
 void percentage_compare(int std_ticks, int ft_ticks);
 void checker(bool equal);
+void test_title(std::string str);
+
+class Test
+{
+private:
+    int*    storage;
+    int size;
+public:
+    // Default
+    Test();
+    Test(const Test &other);
+    ~Test();
+
+    Test&	operator=(const Test &other);
+};
 
 #endif /* ifndef __SRCS_UTILS_HPP__ */
