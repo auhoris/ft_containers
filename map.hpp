@@ -108,7 +108,7 @@ class map {
     void erase(iterator position) { t.erase(position); }
     size_type erase(const key_type& k) { return (t.erase(make_pair(k, mapped_type()))); }
     void erase(iterator first, iterator last) { t.erase(first, last); }
-    void swap(map& x) { (void)x; }
+    void swap(map& x) { t.swap(x.t); }
     void clear() { t.clear(); }
 
     // Observers
