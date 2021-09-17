@@ -1,6 +1,5 @@
 #ifndef __MAP_SRCS_INCLUDES_RBTREE_HPP__
 #define __MAP_SRCS_INCLUDES_RBTREE_HPP__
-
 #include <cstddef>
 #include <functional>
 #include <iostream>
@@ -52,6 +51,7 @@ class rbtree {
    private:  // Functions section
     // Accessors to Node fields =======================
     reference value(link_type nd) { return (*nd->value); }
+    reference value(link_type nd) const { return (*nd->value); }
     bool& color(link_type nd) { return (nd->color); }
     link_type& left(link_type x) { return (x->left); }
     link_type& right(link_type x) { return (x->right); }
@@ -84,6 +84,7 @@ class rbtree {
 
    public:  // Member funcs
     link_type search(const value_type& val);
+    link_type search(const value_type& val) const;
 
     // Default things
     explicit rbtree(
@@ -131,6 +132,7 @@ class rbtree {
         _delete_node(position.node());
     }
     size_type erase(const value_type& val) {
+        if (search(val) == _nil) return (0);
         ft::pair<iterator, iterator> range = equal_range(val);
         erase(range.first, range.second);
         return (1);
@@ -143,6 +145,15 @@ class rbtree {
             first++;
             erase(tmp);
         }
+    }
+    void swap (rbtree & x) {
+        std::swap(_valloc, x._valloc);
+        std::swap(_nalloc, x._nalloc);
+        std::swap(_root, x._root);
+        std::swap(_header, x._header);
+        std::swap(_nil, x._nil);
+        std::swap(_comp, x._comp);
+        std::swap(_size, x._size);
     }
     void clear() { erase(begin(), end()); }
 
@@ -158,7 +169,13 @@ class rbtree {
         return (const_iterator(search(val)));
     }
     size_type count(const value_type& val) const {
-        return (search(val) != _nil ? 1 : 0);
+        pair<const_iterator, const_iterator> pcc = equal_range(val);
+        size_type n = 0;
+        while (pcc.first != pcc.second) {
+            pcc.first++;
+            n++;
+        }
+        return (n);
     }
     iterator lower_bound(const value_type& val) {
         link_type found = search(val);
@@ -169,14 +186,20 @@ class rbtree {
         return (beg);
     }
     const_iterator lower_bound(const value_type& val) const {
-        return (lower_bound(val));
+        link_type found = search(val);
+        const_iterator beg = begin();
+
+        if (found != _nil) return (iterator(found));
+        while (beg != end() && _comp(value(beg.node()), val)) beg++;
+        return (beg);
     }
     iterator upper_bound(const value_type& val) {
         if (search(val) == _nil) return (lower_bound(val));
         return (++lower_bound(val));
     }
     const_iterator upper_bound(const value_type& val) const {
-        return (upper_bound(val));
+        if (search(val) == _nil) return (lower_bound(val));
+        return (++lower_bound(val));
     }
     typedef ft::pair<const_iterator, const_iterator> const_iterator_pair;
     typedef ft::pair<iterator, iterator> iterator_pair;
@@ -546,6 +569,23 @@ void rbtree<T, Compare, Alloc, Node_alloc>::_delete_node(link_type node) {
 template <class T, class Compare, class Alloc, class Node_alloc>
 typename rbtree<T, Compare, Alloc, Node_alloc>::link_type
 rbtree<T, Compare, Alloc, Node_alloc>::search(const value_type& k) {
+    link_type x;
+
+    x = _root;
+    while (x != _nil) {
+        if (!_comp(value(x), k) && !_comp(k, value(x)))
+            break;
+        else if (_comp(k, value(x)))
+            x = left(x);
+        else
+            x = right(x);
+    }
+    return (x);
+}
+
+template <class T, class Compare, class Alloc, class Node_alloc>
+typename rbtree<T, Compare, Alloc, Node_alloc>::link_type
+rbtree<T, Compare, Alloc, Node_alloc>::search(const value_type& k) const {
     link_type x;
 
     x = _root;
