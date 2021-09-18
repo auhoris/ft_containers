@@ -706,3 +706,28 @@ void    swap() {
     compare_maps(std_m2, ft_m2);
     compare_maps(std_m1, ft_m1);
 }
+
+void key_comp() {
+
+    std::map<int, long> smap;
+    ft::map<int, long> fmap;
+
+    // stress_test(smap, fmap);
+
+    std::cout << fmap.key_comp()(5, 2);
+    // if (smap.key_comp()(5, 2) != fmap.key_comp()(5, 2))
+    //     std::cout << RED "KO" DEFAULT << " " << std::flush;
+    // else
+    //     std::cout << GREEN "OK" DEFAULT << " " << std::flush;
+
+    // std::cout << "hello";
+    // if (smap.key_comp()(1, 2) != fmap.key_comp()(1, 2))
+    //     std::cout << RED "KO" DEFAULT << " " << std::flush;
+    // else
+    //     std::cout << GREEN "OK" DEFAULT << " " << std::flush;
+
+    // if (smap.key_comp()(5, 5) != fmap.key_comp()(5, 5))
+    //     std::cout << RED "KO" DEFAULT << "\n" << std::endl;
+    // else
+    //     std::cout << GREEN "OK" DEFAULT << "\n" << std::endl;
+}

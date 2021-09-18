@@ -20,5 +20,7 @@ void find_test();
 void lower_upper_bound();
 void mixup();
 void swap();
+void ft_map_tests();
+void key_comp();
 
 #endif /* ifndef __SRCS_MAP_TEST_HPP__ */
