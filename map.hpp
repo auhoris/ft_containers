@@ -112,8 +112,8 @@ class map {
     void clear() { t.clear(); }
 
     // Observers
-    key_compare key_comp() const { return (key_comp()); }
-    value_compare value_comp() const { return (value_comp()); }
+    key_compare key_comp() const { return (key_compare()); }
+    value_compare value_comp() const { return (value_compare(key_compare())); }
 
     // Operatrions
     iterator find(const key_type& k) {

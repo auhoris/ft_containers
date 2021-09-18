@@ -80,8 +80,8 @@ class set {
     void clear() { t.clear(); }
 
     // Observers
-    key_compare key_comp() const { return (key_comp()); }
-    value_compare value_comp() const { return (value_comp()); }
+    key_compare key_comp() const { return (key_compare()); }
+    value_compare value_comp() const { return (key_comp()); }
 
     // Operatrions
     iterator find(const key_type& k) { return (t.find(k)); }
