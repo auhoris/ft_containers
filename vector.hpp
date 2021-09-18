@@ -8,6 +8,7 @@
 #include <stdexcept>
 #include <utility>
 
+#include "utils/algorithm.hpp"
 #include "utils/iterator.hpp"
 #include "utils/type_traits.hpp"
 #include "utils/vector_iterator.hpp"
@@ -321,7 +322,7 @@ bool operator!=(const vector<T, Alloc>& lhs, const vector<T, Alloc>& rhs) {
 template <class T, class Alloc>
 bool operator<(const vector<T, Alloc>& lhs, const vector<T, Alloc>& rhs) {
     if (lhs.size() < rhs.size()) return (true);
-    return (lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(),
+    return (ft::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(),
                                     rhs.end()));
 }
 
