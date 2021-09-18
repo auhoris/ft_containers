@@ -249,25 +249,25 @@ class vector {
             _alloc.construct(_vector + i, *first++);
         }
     }
-    iterator erase(iterator position) {
-        difference_type pos;
-
-        pos = position - begin();
-        _alloc.destroy(_vector + pos);
-        for (size_type i = static_cast<size_type>(pos); i < _used_size - 1;
-             i++) {
-            _alloc.construct(_vector + i, _vector[i + 1]);
-        }
-        _used_size--;
-        return (begin() + pos);
-    }
+    iterator erase(iterator position) { return (erase(position, ++position)); }
     iterator erase(iterator first, iterator last) {
+        size_type pos = first - begin();
         iterator ret;
+        size_type n = last - first;
 
-        ret = first;
-        for (; first != last; first++) {
-            ret = erase(ret);
+        if (n == _used_size) {
+            clear();
+            return (begin());
         }
+        size_type i = pos;
+        for (; i < n + pos; i++) {
+            _alloc.destroy(_vector + i);
+        }
+        ret = begin() + i;
+        for (; i < _used_size; i++) {
+            _alloc.construct(_vector + i - n, _vector[i]);
+        }
+        _used_size -= n;
         return (ret);
     }
     void swap(vector& x) {
