@@ -44,8 +44,8 @@ class rbtree {
     link_type _header;
     link_type _nil;  // для экономии памяти - будет являться конечным узлом
     Compare _comp;
-    std::allocator<value_type> _valloc;
-    std::allocator<Node> _nalloc;
+    allocator_type _valloc;
+    Node_alloc _nalloc;
     size_type _size;
 
    private:  // Functions section
@@ -276,6 +276,7 @@ template <class T, class Compare, class Alloc, class Node_alloc>
 rbtree<T, Compare, Alloc, Node_alloc>&
 rbtree<T, Compare, Alloc, Node_alloc>::operator=(const rbtree& copy) {
     if (this == &copy) return (*this);
+    clear();
     insert(copy.begin(), copy.end());
     return (*this);
 }
