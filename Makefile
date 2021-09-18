@@ -3,8 +3,7 @@ objdir	= objs
 incdir	= utils
 
 vector_n	= vector
-vector_s	= $(srcdir)/ft_vector.cpp $(srcdir)/std_vector.cpp $(srcdir)/main_vector.cpp \
-			  $(srcdir)/utils.cpp
+vector_s	= $(srcdir)/vector_main.cpp $(srcdir)/vector_test.cpp $(srcdir)/utils.cpp
 vector_h	= vector.hpp
 vector_o	= $(vector_s:$(srcdir)/%.cpp=$(objdir)/%.o)
 vector_d	= $(vector_o:%.o=%.d)
@@ -16,7 +15,7 @@ map_o	= $(map_s:$(srcdir)/%.cpp=$(objdir)/%.o)
 map_d	= $(map_o:%.o=%.d)
 
 set_n	= set
-set_s	= $(srcdir)/set_main.cpp $(srcdir)/utils.cpp
+set_s	= $(srcdir)/set_main.cpp $(srcdir)/set_test.cpp $(srcdir)/utils.cpp
 set_h	= set.hpp
 set_o	= $(set_s:$(srcdir)/%.cpp=$(objdir)/%.o)
 set_d	= $(set_o:%.o=%.d)
@@ -32,7 +31,7 @@ set_d	= $(set_o:%.o=%.d)
 
 sanit 	= -fsanitize=address
 linker	= clang++
-flags	= -Wall -Wextra -Werror -g -std=c++98 #$(sanit)
+flags	= -Wall -Wextra -Werror -g -std=c++98 -O2 #$(sanit)
 sanit	= -fsanitize=address
 std		= -std=c++98
 

@@ -4,6 +4,7 @@
 #include <iostream>
 #include <vector>
 
+#include "map_test.hpp"
 #include "utils.hpp"
 
 void push_back() {
@@ -265,6 +266,66 @@ void insert() {
     percentage_compare(std_ticks, ft_ticks);
     checker(std_vec1.size() == ft_vec1.size());
     checker(ft::equal(std_vec1.begin(), std_vec1.end(), ft_vec1.begin()));
+}
+
+void erase_test() {
+    int start;
+    int end;
+    int std_ticks;
+    int ft_ticks;
+    std::vector<int> std_vec;
+    ft::vector<int> ft_vec;
+    std::vector<int> std_buf;
+    ft::vector<int> ft_buf;
+
+    test_title("ERASE");
+
+    for (size_t i = 0; i < ITERATIONS; i++) {
+        std_vec.push_back(i);
+        ft_vec.push_back(i);
+    }
+
+    start = clock();
+    std_vec.erase(++std_vec.begin(), --std_vec.end());
+    end = clock();
+    time(start, end);
+    std_ticks = end - start;
+
+    start = clock();
+    ft_vec.erase(++ft_vec.begin(), --ft_vec.end());
+    end = clock();
+    time(start, end);
+    ft_ticks = end - start;
+
+    percentage_compare(std_ticks, ft_ticks);
+    checker(std_vec.size() == ft_vec.size());
+    checker(std_vec.capacity() == ft_vec.capacity());
+    checker(ft::equal(std_vec.begin(), std_vec.end(), ft_vec.begin()));
+
+
+    std_vec.clear();
+    ft_vec.clear();
+    for (size_t i = 0; i < ITERATIONS; i++) {
+        std_vec.push_back(i);
+        ft_vec.push_back(i);
+    }
+
+    start = clock();
+    std_vec.erase(std_vec.begin(), --std_vec.end());
+    end = clock();
+    time(start, end);
+    std_ticks = end - start;
+
+    start = clock();
+    ft_vec.erase(ft_vec.begin(), --ft_vec.end());
+    end = clock();
+    time(start, end);
+    ft_ticks = end - start;
+
+    percentage_compare(std_ticks, ft_ticks);
+    checker(std_vec.size() == ft_vec.size());
+    checker(std_vec.capacity() == ft_vec.capacity());
+    checker(ft::equal(std_vec.begin(), std_vec.end(), ft_vec.begin()));
 }
 
 void    constructor_test() {

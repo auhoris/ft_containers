@@ -51,7 +51,7 @@ std::pair<int, char> std_pair(int num) {
 }
 
 template <class Input1, class Input2>
-bool compare_maps(Input1 beg1, Input1 end, Input2 beg2) {
+bool compare_sets(Input1 beg1, Input1 end, Input2 beg2) {
     while (beg1 != end) {
         if (beg1->first != beg2->first) return false;
         beg1++;
@@ -63,7 +63,7 @@ bool compare_maps(Input1 beg1, Input1 end, Input2 beg2) {
 void compare_maps(std::map<int, char> std_map, ft::map<int, char> ft_map) {
     bool equal;
 
-    equal = compare_maps(std_map.begin(), std_map.end(), ft_map.begin());
+    equal = compare_sets(std_map.begin(), std_map.end(), ft_map.begin());
     std::cout << "content: ";
     checker(equal);
     if (!equal) show_map(ft_map);
@@ -497,7 +497,7 @@ void lower_upper_bound() {
     checker((ft_it->first == std_it->first && ft_it->second == std_it->second));
 
     test_title("COMPARE WITH LOWER");
-    checker(compare_maps(std_map.lower_bound(10), std_map.lower_bound(500),
+    checker(compare_sets(std_map.lower_bound(10), std_map.lower_bound(500),
                          ft_map.lower_bound(10)));
 
     test_title("ERASE WITH LOWER");

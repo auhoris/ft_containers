@@ -9,7 +9,8 @@ int main(void) {
     assign();
     insert();
     constructor_test();
+    erase_test();
     // throw_test();
-    ft_vector_tests();
+    // ft_vector_tests();
     return 0;
 }

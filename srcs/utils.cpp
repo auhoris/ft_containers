@@ -28,10 +28,11 @@ void checker(bool equal) {
         std::cout << GREEN << "[OK]" << RESET << " ";
     else
         std::cout << BOLDRED << "[ERROR]" << RESET << " ";
+    std::cout << "\n";
 }
 
 void test_title(std::string str) {
-    std::cout << "\n" YELLOW << str << RESET << ":\n";
+    std::cout << YELLOW << str << RESET << ":\n";
 }
 
 Test::Test() {

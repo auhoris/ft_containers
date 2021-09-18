@@ -74,9 +74,9 @@ class set {
         return (t.insert(first, last));
     }
     void erase(iterator position) { t.erase(position); }
-    size_type erase(const key_type& k) { t.erase(k); }
+    size_type erase(const key_type& k) { return (t.erase(k)); }
     void erase(iterator first, iterator last) { t.erase(first, last); }
-    void swap(set& x) { (void)x; }
+    void swap(set& x) { t.swap(x.t); }
     void clear() { t.clear(); }
 
     // Observers

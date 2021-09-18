@@ -7,7 +7,7 @@
 #include "../vector.hpp"
 #include "utils.hpp"
 
-#define ITERATIONS 100
+#define ITERATIONS 1000
 
 template <class T>
 void show_ft_vector(ft::vector<T> & vector) {
@@ -19,22 +19,18 @@ void show_ft_vector(ft::vector<T> & vector) {
     }
     std::cout << " --> ft"
               << "\n";
-    std::cout << "\n";
 }
 
 template <class T>
 void show_std_vector(std::vector<T> & vector) {
     std::vector<int>::iterator it = vector.begin();
 
-    std::cout << "FT TEST: "
-              << "\n";
     while (it != vector.end()) {
         std::cout << *it << " ";
         it++;
     }
     std::cout << " --> std"
               << "\n";
-    std::cout << "\n";
 }
 
 ft::vector<int> ft_push_back();
@@ -43,6 +39,7 @@ void push_back();
 void pop_back();
 void assign();
 void insert();
+void erase_test();
 void constructor_test();
 void ft_vector_tests();
 void throw_test();
